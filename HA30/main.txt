@@ -1,0 +1,30 @@
+#  ha30_main.txt
+#
+#  Discussion:
+#
+#    Distances are tabulated in hundreds of miles between 30 cities.
+#
+#    The distances are integers.
+#
+#  Modified:
+#
+#    04 July 2011
+#
+#  Author:
+#
+#    John Burkardt
+#
+#  Reference:
+#
+#    John Hartigan,
+#    Clustering Algorithms,
+#    Wiley, 1975.
+#    ISBN 0-471-35645-X
+#    LC: QA278.H36
+#    Dewey: 519.5'3
+#
+size  30
+geom  sphere
+code  ha30_code.txt
+name  ha30_name.txt
+dist  ha30_dist.txt
