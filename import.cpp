@@ -1,33 +1,24 @@
 #include "import.h"
 
-Data::Data() {
-	this->file = "";
-	this->matrixInUse = false;
+Data::Data(struct DataFile df) {
+	this->file = df.path;
+	this->matrix_dim = df.dim;
 }
 
 Data::~Data() {
 
 }
 
-void Data::allocMatrix(int x, int y) {
-	if (this->matrixInUse) {
-		throw "Data matrix already in use";
-	}
-	else {
-		this->matrix_x = x;
-		this->matrix_y = y;
-		this->matrix = new float *[y];
-		for (int i = 0; i < y; ++i)
-			this->matrix[i] = new float[x];
-		this->matrixInUse = true;
-	}
+void Data::allocMatrix() {
+	this->matrix = new float *[this->matrix_dim];
+	for (int i = 0; i < this->matrix_dim; ++i)
+		this->matrix[i] = new float [this->matrix_dim];
 }
 
 void Data::deallocMatrix() {
-	for (int i = 0; i < this->matrix_y; ++i)
+	for (int i = 0; i < this->matrix_dim; ++i)
 		delete this->matrix[i];
 	delete this->matrix;
-	this->matrixInUse = false;
 }
 
 void Data::readData(std::string file) {

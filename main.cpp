@@ -2,9 +2,10 @@
 
 int main() {
 
-	Data D;
-	std::string file = "KN57/xy.txt";
-	D.readData(file);
+	DataFile KN57("KN57/dist.txt", 57);
+	DataFile HA30("HA30/dist.txt", 57);
+
+	Data D(KN57);
 
 	return 0;
 }

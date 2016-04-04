@@ -6,19 +6,13 @@
 #include <sstream>
 #include <string>
 
-namespace DataFiles {
-	struct KN57 {
-		std::string path = "KN57/dist.txt";
-		int dim = 57;
-	};
-	struct HA30 {
-		std::string path = "HA30/dist.txt";
-		int dim = 30;
-	};
-	struct USCAP {
-		std::string path = "HA30/ll.txt";
-		// int dim = 50; // no matrix for this dataset
-	};
+struct DataFile {
+	std::string path;
+	int dim;
+	inline DataFile(std::string s, int d) {
+		this->path = s;
+		this->dim = d;
+	}
 };
 
 
@@ -26,12 +20,11 @@ class Data {
 	private:
 		std::string file;
 		float **matrix;
-		int matrix_x, matrix_y;
-		bool matrixInUse;
+		int matrix_dim;
 	public:
-		Data();
+		Data(struct DataFile);
 		~Data();
-		void allocMatrix(int x, int y);
+		void allocMatrix();
 		void deallocMatrix();
 		void getData(std::string file);
 		void readData(std::string file);
