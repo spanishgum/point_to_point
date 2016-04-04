@@ -26,8 +26,8 @@ class Data {
 		~Data();
 		void allocMatrix();
 		void deallocMatrix();
-		void getData(std::string file);
-		void readData(std::string file);
+		void getData();
+		void readData();
 
 };	
 
