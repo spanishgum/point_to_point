@@ -3,7 +3,7 @@
 int main() {
 
 	Data D;
-	std::string file = "HA30/xyz.txt";
+	std::string file = "KN57/xy.txt";
 	D.readData(file);
 
 	return 0;
