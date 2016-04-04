@@ -48,3 +48,12 @@ void Data::getData() {
 		std:: cout << std::endl;
 	}
 }
+
+
+void Data::getData(int city) {
+	if (city >= this->matrix_dim)
+		throw "Invalid city ID.\n";
+	for (int i = 0; i < this->matrix_dim; ++i)
+		std:: cout << this->matrix[city][i] << " ";
+	std::cout << std::endl;
+}

@@ -26,8 +26,10 @@ class Data {
 		~Data();
 		void allocMatrix();
 		void deallocMatrix();
-		void getData();
 		void readData();
+		void getData();
+		void getData(int i);
+		inline int getDim() const { return this->matrix_dim; }
 
 };	
 
