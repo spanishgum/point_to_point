@@ -37,7 +37,10 @@ void Data::readData(std::string file) {
 	}
 	std::string line;
 	while (std::getline(ifs, line)) {
-		std::cout << line;		
+		std::stringstream ss(line);
+		float x, y;
+		ss >> x >> y;
+		std::cout << x << "\t" << y << "\n";
 	}
 }
 
