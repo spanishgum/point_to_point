@@ -2,20 +2,23 @@
 
 int main() {
 
+	std::cout << "\nTesting KN57\n-------------------\n\n";
 	DataFile KN57("KN57/dist.txt", 57);
-	DataFile HA30("HA30/dist.txt", 57);
-
-	std::cout << "Dataset 1 : KN57\n";
 	Data D1(KN57);
-	D1.readData();
-	// D1.getData();
+	// for (int i = 0; i < D1.getDim(); ++i)
+		// D1.getData(i);
+	D1.createGraph();
+	D1.outputGraph();
 	
-	std::cout << "\n\nDataset 2 : HA30\n";
-	Data D2(KN57);
-	D2.readData();
-	for (int i = 0; i < D2.getDim(); ++i)
-		D2.getData(i);
-
+	std::cout << "\nTesting HA30\n-------------------\n\n";
+	DataFile HA30("HA30/dist.txt", 30);
+	Data D2(HA30);
+	// for (int i = 0; i < D2.getDim(); ++i)
+		// D2.getData(i);
+	D2.createGraph();
+	D2.outputGraph();
+		
+		
 	
 	return 0;
 }

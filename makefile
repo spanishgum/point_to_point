@@ -41,12 +41,12 @@ EXE := main
 
 
 .SUFFIXES :
-.PHONY : fresh clean cls hdr ftr
+.PHONY : fresh clean cls hdr ftr semi_clean
 
 
 ##########################################################
 
-all : $(EXE)
+all : fresh
 
 $(EXE) : $(OBJS)
 	$(CC) $(CCFLAGS) -o $@ $^
@@ -58,7 +58,7 @@ $(EXE) : $(OBJS)
 ##########################################################
 
 
-fresh : clean cls hdr all ftr
+fresh : clean cls hdr $(EXE) ftr semi_clean
 
 clean :
 	-@rm $(OBJS) $(EXE) 2>/dev/null || true
@@ -72,5 +72,8 @@ hdr :
 ftr :
 	@$(info $(FOOTER))
 
+semi_clean :
+	-@rm $(OBJS) 2>/dev/null || true
 
+	
 ##########################################################
