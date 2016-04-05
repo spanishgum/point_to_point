@@ -35,7 +35,7 @@ CCFLAGS = -Wall -pedantic
 SRCS := $(wildcard *.cpp)
 OBJS := $(patsubst %.cpp,%.o,$(SRCS))
 EXE := main
-
+LEMON := -lemon -I lemon_lib/include -L lemon_lib/lib
 
 ##########################################################
 
@@ -52,7 +52,7 @@ $(EXE) : $(OBJS)
 	$(CC) $(CCFLAGS) -o $@ $^
 
 %.o : %.cpp
-	$(CC) $(CCFLAGS) -c $<
+	$(CC) $(CCFLAGS) $(LEMON) -c $<
 
 
 ##########################################################

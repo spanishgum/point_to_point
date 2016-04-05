@@ -1,4 +1,5 @@
 #include "import.h"
+#include "lemon/list_graph.h"
 
 int main() {
 
@@ -7,8 +8,8 @@ int main() {
 	Data D1(KN57);
 	// for (int i = 0; i < D1.getDim(); ++i)
 		// D1.getData(i);
-	D1.createGraph();
-	D1.outputGraph();
+	// D1.createGraph();
+	// D1.outputGraph();
 	
 	std::cout << "\nTesting HA30\n-------------------\n\n";
 	DataFile HA30("HA30/dist.txt", 30);
@@ -16,9 +17,11 @@ int main() {
 	// for (int i = 0; i < D2.getDim(); ++i)
 		// D2.getData(i);
 	D2.createGraph();
-	D2.outputGraph();
-		
-		
+	// D2.outputGraph();
+	
+	lemon::ListDigraph LDG();
 	
 	return 0;
 }
+
+

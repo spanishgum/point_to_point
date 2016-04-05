@@ -6,12 +6,38 @@
 #include <sstream>
 #include <string>
 #include <cstdlib>
-#include <list>
+#include <vector>
 #include <sys/stat.h>
 #include <algorithm>
 
-#define MIN_DEGREE 2
+#define MIN_DEGREE 3
 #define MAX_DEGREE 8
+
+struct Vertex {
+	int id;
+	std::vector< std::pair<float, int> > edges;
+	inline Vertex(int i) {
+		this->id = i;
+	}
+	inline void addEdge(std::pair<float, int> weight_id) {
+		if (std::find(this->edges.begin(), this->edges.end(), weight_id)
+				== this->edges.end())
+			this->edges.push_back(weight_id);
+	}
+};
+
+
+class Graph {
+	private:
+		std::vector<Vertex> adjacency;
+		
+	public:
+		Graph(std::vector<Vertex>);
+		~Graph();
+		void showAdjacency();
+};
+
+
 
 struct DataFile {
 	std::string path;
@@ -26,18 +52,6 @@ struct DataFile {
 	}
 };
 
-struct Vertex {
-	int id;
-	std::list<int> edges;
-	inline Vertex(int i) {
-		this->id = i;
-	}
-	inline void addEdge(int i) {
-		if (std::find(this->edges.begin(), this->edges.end(), i)
-				== this->edges.end())
-			this->edges.push_back(i);
-	}
-};
 
 class Data {
 	private:
@@ -45,13 +59,19 @@ class Data {
 		float **matrix;
 		unsigned int matrix_dim;
 		
-		std::list<Vertex> adjacency;
+		std::vector<Vertex> adjacency;
 		
 		void allocMatrix();
 		void deallocMatrix();
 		void readData();
 		
-		std::list< std::pair<float, int> > findClosestTo(unsigned int, unsigned int);
+		std::vector< std::pair<float, int> > findClosestTo(unsigned int, unsigned int);
+		
+		bool *visited;
+		
+		void addEdgeToVertex(int);
+		bool checkGraphIsConnected();
+		void DFSGraphUtil(int);
 		
 	public:
 		Data(struct DataFile);
@@ -62,6 +82,7 @@ class Data {
 
 		void createGraph();
 		void outputGraph();
+		std::vector<Vertex> getGraph();
 };	
 
 
