@@ -83,12 +83,12 @@ void Data::addEdgeToVertex(int v) {
 	Vertex &vertex = adjacency[v];
 	unsigned int new_degree = vertex.edges.size() + 1;
 	if (new_degree > this->matrix_dim) return;
-	std::cout << "adding edges to " << v << ":\n";
+	// std::cout << "adding edges to " << v << ":\n";
 	for (auto e : findClosestTo(v, new_degree)) {
 		vertex.addEdge(e);
-		std::cout << e.second << " ";
+		// std::cout << e.second << " ";
 	}
-	std::cout << std::endl;
+	// std::cout << std::endl;
 	// std::cin.get();
 }
 
@@ -100,11 +100,11 @@ bool Data::checkGraphIsConnected() {
 			this->addEdgeToVertex(i);
 		}
 		else {
-			std::cout << i << " is connected:\n";
-			for (auto e : adjacency[i].edges) {
-				std::cout << e.second << " ";
-			}
-			std::cout << std::endl;
+			// std::cout << i << " is connected:\n";
+			// for (auto e : adjacency[i].edges) {
+				// std::cout << e.second << " ";
+			// }
+			// std::cout << std::endl;
 		}
 		res &= visited[i];
 	}
@@ -115,13 +115,11 @@ bool Data::checkGraphIsConnected() {
 void Data::DFSGraphUtil(int v) {
 	// Mark the current node as visited and print it
 	this->visited[v] = true;
-	std::cout << "=================" << v << "\n";
-	std::cin.get();
+	// std::cout << "=================" << v << "\n";
+	// std::cin.get();
 	std::vector< std::pair<float, int> > &v_edges = this->adjacency[v].edges;
 	// Recur for all the vertices adjacent to this vertex
 	for (unsigned int e = 0; e < v_edges.size(); ++e) {
-		std::cout << v_edges[e].second << "-";
-		std::cin.get();
 		if (!this->visited[v_edges[e].second])
 			this->DFSGraphUtil(v_edges[e].second);
 	}
@@ -142,10 +140,10 @@ void Data::createGraph() {
 		this->visited[i] = 0;
 	while (!checkGraphIsConnected()) {
 		std::cerr << "Attempting to connect graph by adding more edges.\n";
-		for (int i = 0; i < this->matrix_dim; ++i)
-			std::cout << this->visited[i];
-		std::cout << std::endl;
-		std::cin.get();
+		// for (unsigned int i = 0; i < this->matrix_dim; ++i)
+			// std::cout << this->visited[i];
+		// std::cout << std::endl;
+		// std::cin.get();
 	}
 	delete [] this->visited;
 }
