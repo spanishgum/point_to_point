@@ -86,6 +86,7 @@ void Data::addEdgeToVertex(int v) {
 	// std::cout << "adding edges to " << v << ":\n";
 	for (auto e : findClosestTo(v, new_degree)) {
 		vertex.addEdge(e);
+		this->adjacency[e.second].addEdge(std::make_pair(e.first, vertex.id));
 		// std::cout << e.second << " ";
 	}
 	// std::cout << std::endl;
@@ -128,12 +129,20 @@ void Data::DFSGraphUtil(int v) {
 
 void Data::createGraph() {
 	srand(0);
+	// populate the adjaency list with random count of nearest neighbors
 	for (unsigned int i = 0; i < this->matrix_dim; ++i) {
 		Vertex V(i);
 		unsigned int num_edges = MIN_DEGREE + (rand() % (MAX_DEGREE - MIN_DEGREE));
-		for (auto e : findClosestTo(i, num_edges))
+		for (auto e : findClosestTo(i, num_edges)) {
 			V.addEdge(e);
+		}
 		this->adjacency.push_back(V);
+	}
+	// go back through list and add reverse neighbors (if (e_i -> e_j) then (e_j -> e_i))
+	for (unsigned int i = 0; i < this->matrix_dim; ++i) {
+		for (unsigned int e = 0; e < this->adjacency[i].edges.size(); ++e) {
+			this->adjacency[this->adjacency[i].edges[e].second].addEdge(std::make_pair(this->adjacency[i].edges[e].first, i));
+		}
 	}
 	this->visited = new bool[this->matrix_dim];
 	for (unsigned int i = 0; i < this->matrix_dim; ++i) 
@@ -148,11 +157,43 @@ void Data::createGraph() {
 	delete [] this->visited;
 }
 
-void Data::outputGraph() {
+void Data::outputGraph(std::string ofile) {
+	std::ofstream ofs(ofile);
 	for (auto v : this->adjacency) {
+		ofs << v.id << " : ";
+		for (auto e : v.edges)
+			ofs << e.first << "," << e.second << " ";
+		ofs << std::endl;
+	}
+	ofs.close();
+}
+
+void Data::importGraph(std::string ifile) {
+	std::ifstream ifs(ifile);
+	if (!ifs) {
+		std::cerr << "Bad input file name.\n";
+		return;
+	}
+	std::string line;
+	int v_id, e_id, e_weight;
+	char delim;
+	while (std::getline(ifs, line)) {
+		std::stringstream ss(line);
+		ss >> v_id >> delim;
+		Vertex V(v_id);
+		while (ss >> e_weight >> delim >> e_id) {
+			V.addEdge(std::make_pair(e_weight, e_id));
+		}
+		this->imported_adjacency.push_back(V);
+	}
+	ifs.close();
+}
+
+void Data::testImport() {
+	for (auto v : this->imported_adjacency) {
 		std::cout << v.id << " : ";
 		for (auto e : v.edges)
-			std::cout << e.second << " ";
+			std::cout << e.first << "," << e.second << " ";
 		std::cout << std::endl;
 	}
 }

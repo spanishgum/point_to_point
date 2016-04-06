@@ -24,6 +24,12 @@ struct Vertex {
 				== this->edges.end())
 			this->edges.push_back(weight_id);
 	}
+	inline bool hasEdge(int id) {
+		for (unsigned int e = 0; e < edges.size(); ++e)
+			if (edges[e].second == id)
+				return true;
+		return false;
+	}
 };
 
 
@@ -61,6 +67,8 @@ class Data {
 		
 		std::vector<Vertex> adjacency;
 		
+		std::vector<Vertex> imported_adjacency;
+		
 		void allocMatrix();
 		void deallocMatrix();
 		void readData();
@@ -81,8 +89,10 @@ class Data {
 		void getData(unsigned int i);
 
 		void createGraph();
-		void outputGraph();
+		void outputGraph(std::string);
+		void importGraph(std::string);
 		std::vector<Vertex> getGraph();
+		void testImport();
 };	
 
 
