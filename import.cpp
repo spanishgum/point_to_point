@@ -199,5 +199,5 @@ void Data::testImport() {
 }
 
 std::vector<Vertex> Data::getGraph() {
-	return this->adjacency;
+	return this->imported_adjacency;
 }
