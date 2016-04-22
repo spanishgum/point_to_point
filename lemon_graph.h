@@ -40,7 +40,9 @@ class Lemon {
 		Lemon(std::vector<Vertex>, ListGraph *, ListDigraph *);
 		~Lemon();
 		void test();
+		int getN2idx(ListGraph::Node);
 		void weightedMatching();
+		static void weightedMatching(Lemon&);
 		void kruskalsMinSpanningTree();
 		void dijkstrasShortestPath();
 
