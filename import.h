@@ -9,6 +9,8 @@
 #include <vector>
 #include <sys/stat.h>
 #include <algorithm>
+#include <thread>
+#include <mutex>
 
 #define MIN_DEGREE 3
 #define MAX_DEGREE 8

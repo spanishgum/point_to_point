@@ -2,9 +2,25 @@
 
 #include <ctime>
 #include <functional>
+#include <thread>
+#include <mutex>
 
-void timeit(void(Lemon::*)(void), Lemon&);
+void timeit(void(Lemon::*fptr)(void), Lemon& L){
+	clock_t beg = clock();
+	(L.*fptr)();
+	clock_t res = clock() - beg;
+	float result = ((float)res) / CLOCKS_PER_SEC;
+
+	/*Can either pass the algName as a parameter or we can 
+	 * create a map of Lemon::*fptr to AlgName*/
+	//printResult(algName, result);
+	std::cout << "\n" << result << "s\n";
+}
 void timeit(void(Data::*)(void), Data&);
+void printResult(std::string, float);
+
+
+std::mutex mu;
 
 int main() {
 
@@ -37,21 +53,31 @@ int main() {
 	Lemon L(D2.getGraph(), &LG, &LDG);
 	L.test();
 	
-	timeit((&Lemon::weightedMatching), L);
+	clock_t beg = clock();	
+	std::thread weightedMatchingThread([&] {L.weightedMatching();});
+	std::thread kruskalsThread([&] {timeit(&Lemon::kruskalsMinSpanningTree, L);});
+	//timeit((&Lemon::weightedMatching), L);
 	// L.kruskalsMinSpanningTree();
 	// L.dijkstrasShortestPath();:
 	
-	
+	weightedMatchingThread.join();
+	kruskalsThread.join();
+	float result = (float)(clock() - beg) / CLOCKS_PER_SEC;
+	std::cout << "\n" << result << "s\n";
 	return 0;
 }
 
-void timeit(void(Lemon::*fptr)(void), Lemon& L) {
+/*void timeit(void(Lemon::*fptr)(void), Lemon& L) {
 	clock_t beg = clock();
 	(L.*fptr)();
 	clock_t res = clock() - beg;
 	float result = ((float)res) / CLOCKS_PER_SEC;
+
+	//Can either pass the algName as a parameter or we can 
+	 // create a map of Lemon::*fptr to AlgName
+	//printResult(algName, result);
 	std::cout << "\n" << result << "s\n";
-}
+}*/
 
 void timeit(void(Data::*fptr)(void), Data& D) {
 	clock_t beg = clock();
@@ -60,3 +86,15 @@ void timeit(void(Data::*fptr)(void), Data& D) {
 	float result = ((float)res) / CLOCKS_PER_SEC;
 	std::cout << "\n" << result << "s\n";
 }
+
+/*This function allows us to print the times for each function on seperate threads
+ * without the chance of them trying to print out at the same time*/
+void printResult(std::string algName, float result){
+	mu.lock();
+	
+	std::cout << "\n" << "Time it took " << algName << " to complete: " << result << " seconds\n";
+	//could also store results here if we wanted to use them for comparison later
+	
+	mu.unlock();
+}
+

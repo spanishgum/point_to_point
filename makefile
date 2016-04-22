@@ -31,7 +31,7 @@ export HEADER FOOTER
 
 
 CC = g++ -std=c++11
-CCFLAGS = -Wall -pedantic
+CCFLAGS = -Wall -pedantic -pthread -Wl,--no-as-needed
 SRCS := $(wildcard *.cpp)
 OBJS := $(patsubst %.cpp,%.o,$(SRCS))
 EXE := main

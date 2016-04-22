@@ -73,16 +73,34 @@ void Lemon::test() {
 
 void Lemon::weightedMatching() {
 	MaxWeightedMatching< ListGraph, ListGraph::EdgeMap<float> > 
-		M(*this->graph, this->weights);
+		M(*(this->graph), this->weights);
 	M.run();
 	std::vector< std::pair<int, int> > results;
-	for (ListGraph::NodeIt n(*this->graph); n != INVALID; ++n) {
+	for (ListGraph::NodeIt n(*(this->graph)); n != INVALID; ++n) {
 		if (M.mate(n) == INVALID) continue;
-		results.push_back(std::make_pair(n2idx[n], n2idx[M.mate(n)]));
+		results.push_back(std::make_pair(this->n2idx[n], this->n2idx[M.mate(n)]));
 	}
 	std::cout << "Max weighted matching edge set:\n";
 	for (auto r : results)
 		std::cout << r.first << ":" << r.second << "\n";
+}
+
+void Lemon::weightedMatching(Lemon &L) {
+	MaxWeightedMatching< ListGraph, ListGraph::EdgeMap<float> > 
+		M(*(L.graph), L.weights);
+	M.run();
+	std::vector< std::pair<int, int> > results;
+	for (ListGraph::NodeIt n(*(L.graph)); n != INVALID; ++n) {
+		if (M.mate(n) == INVALID) continue;
+		results.push_back(std::make_pair(L.getN2idx(n), L.getN2idx(M.mate(n))));
+	}
+	std::cout << "Max weighted matching edge set:\n";
+	for (auto r : results)
+		std::cout << r.first << ":" << r.second << "\n";
+}
+
+int Lemon::getN2idx(ListGraph::Node n){
+	return n2idx[n];
 }
 
 void Lemon::kruskalsMinSpanningTree() {
