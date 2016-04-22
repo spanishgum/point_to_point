@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include <cstdlib>
+#include <ctime>
 #include <vector>
 #include <sys/stat.h>
 #include <algorithm>
@@ -13,6 +14,7 @@
 
 
 #include "import.h"
+#include "lemon/core.h"
 #include "lemon/list_graph.h"
 #include "lemon/matching.h"
 #include "lemon/kruskal.h"
@@ -27,10 +29,15 @@ class Lemon {
 		ListGraph::NodeMap<int> n2idx;
 		std::map<int, ListGraph::Node> idx2n;
 		ListGraph::EdgeMap< std::pair<int, int> > e2n;
-		
-		
+
+                ListDigraph *digraph;
+                ListDigraph::ArcMap<float> weightsDi;
+                ListDigraph::ArcMap<int> arcMap;
+                ListDigraph::NodeMap<int> n2idxDi;
+                std::map<int, ListDigraph::Node> idx2nDi;
+	        
 	public:
-		Lemon(std::vector<Vertex>, ListGraph *);
+		Lemon(std::vector<Vertex>, ListGraph *, ListDigraph *);
 		~Lemon();
 		void test();
 		void weightedMatching();

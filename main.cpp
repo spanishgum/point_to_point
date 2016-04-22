@@ -31,15 +31,15 @@ int main() {
 	// D2.testImport();
 	
 	
-	lemon::ListDigraph LDG();
+	lemon::ListDigraph LDG;
 	
 	lemon::ListGraph LG;
-	Lemon L(D2.getGraph(), &LG);
-	// L.test();
+	Lemon L(D2.getGraph(), &LG, &LDG);
+	L.test();
 	
 	timeit((&Lemon::weightedMatching), L);
 	// L.kruskalsMinSpanningTree();
-	// L.dijkstrasShortestPath();
+	// L.dijkstrasShortestPath();:
 	
 	
 	return 0;

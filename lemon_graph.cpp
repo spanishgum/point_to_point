@@ -17,12 +17,18 @@ parallel algorithms
 
 
 
-Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g) 
-	: graph(g), weights(*g), n2idx(*g), e2n(*g) {
+Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g, ListDigraph *dg) 
+	: graph(g), weights(*g), n2idx(*g), e2n(*g),
+        digraph(dg), weightsDi(*dg), arcMap(*dg), n2idxDi(*dg)  {
+
 	for (auto v : adjacency_list) {
 		ListGraph::Node n = this->graph->addNode();
 		this->n2idx[n] = v.id;
 		this->idx2n.insert(std::make_pair(v.id, n));
+
+                ListDigraph::Node dN = this->digraph->addNode();
+                this->n2idxDi[dN] = v.id;
+                this->idx2nDi.insert(std::make_pair(v.id, dN));
 	}
 	for (auto v : adjacency_list) {
 		for (auto e : v.edges) {
@@ -31,6 +37,9 @@ Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g)
 			ListGraph::Edge E = this->graph->addEdge(idx2n[e_i], idx2n[e_j]);
 			this->weights[E] = w;
 			this->e2n[E] = std::make_pair(e_i, e_j);	
+
+                        ListDigraph::Arc a = this->digraph->addArc(idx2nDi[e_i], idx2nDi[e_j]);
+                        this->weightsDi[a] = w;
 		}
 	}
 }
@@ -40,18 +49,26 @@ Lemon::~Lemon() {
 }
 
 void Lemon::test() {
+        /*
 	for (ListGraph::NodeIt n(*this->graph); n != INVALID; ++n)
-		std::cout << n2idx[n] << " ";
+	    std::cout << n2idx[n] << " ";
 	std::cout << "\n";
 	for (ListGraph::EdgeIt e(*this->graph); e != INVALID; ++e)
-		std::cout << weights[e] << " ";
+        		std::cout << weights[e] << " ";
+        std::cout << "\n";
+	for (auto n : this->n2idx)
+	    std::cout << n << " ";
 	std::cout << "\n";
-	// for (auto n : this->n2idx)
-		// std::cout << n << " ";
-	// std::cout << "\n";
-	// for (auto n : this->idx2n)
-		// std::cout << n << " ";
-	// std::cout << "\n";
+	for (auto n : this->idx2n)
+	    std::cout << n << " ";
+	std::cout << "\n";
+
+        for (ListDigraph::ArcIt a(*this->digraph); a != INVALID; ++a) {
+            std::cout << "(" << this->digraph->id(this->digraph->source(a)) 
+                      << "," << this->digraph->id(this->digraph->target(a))
+                      << ") -  " << this->weightsDi[a] << std::endl;;
+        }
+        */
 }
 
 void Lemon::weightedMatching() {
@@ -84,7 +101,23 @@ void Lemon::kruskalsMinSpanningTree() {
 }
 
 void Lemon::dijkstrasShortestPath() {
-	
+    std::srand(std::time(NULL));
+    std::map<int, ListGraph::Node>::iterator startPair = idx2n.begin();
+    std::advance(startPair, std::rand() % idx2n.size());
+    ListGraph::Node s = startPair->second;
+
+    //auto d = Dijkstra<ListGraph, ListGraph::EdgeMap>(*(this->graph), this->weights);
+    //for (auto m : this->idx2n) {
+        
+        // Find Shortest paths/length from each facility and choose min.
+        //DType::DistMap shortestPath;
+        
+        //if (dijkstra(this->graph, this->weights).distMap(shortestPath).run(s,m.second)) {
+            // Should always be true
+            //for (ListGraph::EdgeIt e(shortestPath); e != INVALID; ++e)
+            //    std::cout << e2n[e].first << ":" << e2n[e].second << std::endl;
+        //}
+    //}
 }
 
 
