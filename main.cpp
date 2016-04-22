@@ -39,7 +39,7 @@ int main() {
 	
 	timeit((&Lemon::weightedMatching), L);
 	// L.kruskalsMinSpanningTree();
-	// L.dijkstrasShortestPath();:
+	L.dijkstrasShortestPath();
 	
 	
 	return 0;

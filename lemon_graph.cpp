@@ -101,23 +101,35 @@ void Lemon::kruskalsMinSpanningTree() {
 }
 
 void Lemon::dijkstrasShortestPath() {
-    std::srand(std::time(NULL));
-    std::map<int, ListGraph::Node>::iterator startPair = idx2n.begin();
-    std::advance(startPair, std::rand() % idx2n.size());
-    ListGraph::Node s = startPair->second;
 
-    //auto d = Dijkstra<ListGraph, ListGraph::EdgeMap>(*(this->graph), this->weights);
-    //for (auto m : this->idx2n) {
+    std::cout << "Dijkstra Shortest Path" << std::endl;
+    
+    // Facility node
+    std::srand(std::time(NULL));
+    std::map<int, ListDigraph::Node>::iterator startPair = idx2nDi.begin();
+    std::advance(startPair, std::rand() % idx2nDi.size());
+    ListDigraph::Node s = startPair->second;
+
+    std::cout << "Facility Node: " << this->digraph->id(s) << std::endl;
+   
+    
+    for (auto t : this->idx2nDi) {
+        auto d = Dijkstra<ListDigraph, ListDigraph::ArcMap<float> >(*(this->digraph), this->weightsDi);
+        d.run(s);
+
+        std::cout << "The distance of node t from node s: "
+                  << d.dist(t.second) << std::endl;
+
+        std::cout << "Shortest path from " << this->digraph->id(s) << " to "
+                  << this->digraph->id(t.second)
+                  << " goes through the following nodes: ";
         
-        // Find Shortest paths/length from each facility and choose min.
-        //DType::DistMap shortestPath;
-        
-        //if (dijkstra(this->graph, this->weights).distMap(shortestPath).run(s,m.second)) {
-            // Should always be true
-            //for (ListGraph::EdgeIt e(shortestPath); e != INVALID; ++e)
-            //    std::cout << e2n[e].first << ":" << e2n[e].second << std::endl;
-        //}
-    //}
+        for (ListDigraph::Node v = t.second; v != s; v = d.predNode(v)) {
+            std::cout << this->digraph->id(v) << "->";
+        }
+        std::cout << this->digraph->id(s) << std::endl;
+    }
+    
 }
 
 
