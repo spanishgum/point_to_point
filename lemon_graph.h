@@ -31,16 +31,10 @@ class Lemon {
 		std::map<int, ListGraph::Node> idx2n;
 		ListGraph::EdgeMap< std::pair<int, int> > e2n;
 
-                ListDigraph *digraph;
-                ListDigraph::ArcMap<float> weightsDi;
-                ListDigraph::ArcMap<int> arcMap;
-                ListDigraph::NodeMap<int> n2idxDi;
-                std::map<int, ListDigraph::Node> idx2nDi;
-                
-                std::pair<int, ListDigraph::Node> disCenter;
+                std::pair<int, ListGraph::Node> disCenter;
 
 
-                int dijkstrasTotalMinDistance(ListDigraph::Node &); 
+                int dijkstrasTotalMinDistance(ListGraph::Node &); 
 	        
 	public:
 		Lemon(std::vector<Vertex>, ListGraph *, ListDigraph *);

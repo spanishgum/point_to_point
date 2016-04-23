@@ -18,18 +18,13 @@ parallel algorithms
 
 
 Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g, ListDigraph *dg) 
-	: graph(g), weights(*g), n2idx(*g), e2n(*g),
-        digraph(dg), weightsDi(*dg), arcMap(*dg), n2idxDi(*dg)  {
+	: graph(g), weights(*g), n2idx(*g), e2n(*g) {
 
 	for (auto v : adjacency_list) {
 		ListGraph::Node n = this->graph->addNode();
 		this->n2idx[n] = v.id;
 		this->idx2n.insert(std::make_pair(v.id, n));
-
-                ListDigraph::Node dN = this->digraph->addNode();
-                this->n2idxDi[dN] = v.id;
-                this->idx2nDi.insert(std::make_pair(v.id, dN));
-	}
+    }
 	for (auto v : adjacency_list) {
 		for (auto e : v.edges) {
 			int e_i = v.id, e_j = e.second;
@@ -37,13 +32,9 @@ Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g, ListDigraph *dg)
 			ListGraph::Edge E = this->graph->addEdge(idx2n[e_i], idx2n[e_j]);
 			this->weights[E] = w;
 			this->e2n[E] = std::make_pair(e_i, e_j);	
-
-                        ListDigraph::Arc a = this->digraph->addArc(idx2nDi[e_i], idx2nDi[e_j]);
-                        this->weightsDi[a] = w;
-		}
+        }
 	}
-
-        //this->initDistributionCenter();
+    this->initDistributionCenter();
 }
 
 Lemon::~Lemon() {
@@ -85,13 +76,14 @@ void Lemon::test() {
 void Lemon::initDistributionCenter() {
     int cur, min = std::numeric_limits<int>::max();
 
-    for (auto n : this->idx2nDi) {
+    for (auto n : this->idx2n) {
         if ((cur = dijkstrasTotalMinDistance(n.second)) < min) {
             this->disCenter.first = n.first;
             this->disCenter.second = n.second;
             min = cur;
         }
     }
+    std::cout << "DistributionCenter: " << disCenter.first << std::endl;
 }
 
 void Lemon::weightedMatching() {
@@ -148,10 +140,10 @@ void Lemon::kruskalsMinSpanningTree() {
  *  @param s            Potential facility node 
  *  @return             Total minimum distance to every node
  */
-int Lemon::dijkstrasTotalMinDistance(ListDigraph::Node &s) {
+int Lemon::dijkstrasTotalMinDistance(ListGraph::Node &s) {
     int distance = 0;
-    for (auto t : this->idx2nDi) {
-        auto d = Dijkstra<ListDigraph, ListDigraph::ArcMap<float> >(*(this->digraph), this->weightsDi);
+    for (auto t : this->idx2n) {
+        auto d = Dijkstra<ListGraph, ListGraph::EdgeMap<float> >(*(this->graph), this->weights);
         d.run(s);
         distance += d.dist(t.second);
     }
@@ -164,28 +156,28 @@ void Lemon::dijkstrasShortestPath() {
     
     // Facility node
     std::srand(std::time(NULL));
-    std::map<int, ListDigraph::Node>::iterator startPair = idx2nDi.begin();
-    std::advance(startPair, std::rand() % idx2nDi.size());
-    ListDigraph::Node s = startPair->second;
+    std::map<int, ListGraph::Node>::iterator startPair = idx2n.begin();
+    std::advance(startPair, std::rand() % idx2n.size());
+    ListGraph::Node s = startPair->second;
 
-    std::cout << "Facility Node: " << this->digraph->id(s) << std::endl;
+    std::cout << "Facility Node: " << this->graph->id(s) << std::endl;
    
     
-    for (auto t : this->idx2nDi) {
-        auto d = Dijkstra<ListDigraph, ListDigraph::ArcMap<float> >(*(this->digraph), this->weightsDi);
+    for (auto t : this->idx2n) {
+        auto d = Dijkstra<ListGraph, ListGraph::EdgeMap<float> >(*(this->graph), this->weights);
         d.run(s);
 
         std::cout << "The distance of node t from node s: "
                   << d.dist(t.second) << std::endl;
 
-        std::cout << "Shortest path from " << this->digraph->id(s) << " to "
-                  << this->digraph->id(t.second)
+        std::cout << "Shortest path from " << this->graph->id(s) << " to "
+                  << this->graph->id(t.second)
                   << " goes through the following nodes: ";
         
-        for (ListDigraph::Node v = t.second; v != s; v = d.predNode(v)) {
-            std::cout << this->digraph->id(v) << "->";
+        for (ListGraph::Node v = t.second; v != s; v = d.predNode(v)) {
+            std::cout << this->graph->id(v) << "->";
         }
-        std::cout << this->digraph->id(s) << std::endl;
+        std::cout << this->graph->id(s) << std::endl;
     }
     
 }
