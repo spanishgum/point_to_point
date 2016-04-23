@@ -37,7 +37,7 @@ class Lemon {
                 int dijkstrasTotalMinDistance(ListGraph::Node &); 
 	        
 	public:
-		Lemon(std::vector<Vertex>, ListGraph *, ListDigraph *);
+		Lemon(std::vector<Vertex>, ListGraph *);
 		~Lemon();
                 void initDistributionCenter();
 		void test();

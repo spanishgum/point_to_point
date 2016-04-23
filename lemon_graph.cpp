@@ -17,7 +17,7 @@ parallel algorithms
 
 
 
-Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g, ListDigraph *dg) 
+Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g) 
 	: graph(g), weights(*g), n2idx(*g), e2n(*g) {
 
 	for (auto v : adjacency_list) {
