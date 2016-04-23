@@ -46,8 +46,11 @@ class Lemon {
 		void kruskalsMinSpanningTree();
 		void dijkstrasShortestPath();
 
+		const std::vector<std::string> funcName = { "Weighted Matching", "Kruskal", "Dijkstra" };
+
 };
 
+//const std::vector<std::string> Lemon::funcName { "Weighted Matching", "Kruskal", "Dijkstra" };
 
 
 

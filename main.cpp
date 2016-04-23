@@ -5,20 +5,14 @@
 #include <thread>
 #include <mutex>
 
-void timeit(void(Lemon::*fptr)(void), Lemon& L){
-	clock_t beg = clock();
-	(L.*fptr)();
-	clock_t res = clock() - beg;
-	float result = ((float)res) / CLOCKS_PER_SEC;
+#define WEIGHTEDMATCHING 0
+#define KRUSKAL 1
+#define DIJKSTRA 2
 
-	/*Can either pass the algName as a parameter or we can 
-	 * create a map of Lemon::*fptr to AlgName*/
-	//printResult(algName, result);
-	std::cout << "\n" << result << "s\n";
-}
-void timeit(void(Data::*)(void), Data&);
+
 void printResult(std::string, float);
-
+void timeit(void(Lemon::*fptr)(void), Lemon& L, int i);
+void timeit(void(Data::*)(void), Data&);
 
 std::mutex mu;
 
@@ -54,20 +48,22 @@ int main() {
 	L.test();
 	
 	clock_t beg = clock();	
-	std::thread weightedMatchingThread([&] {L.weightedMatching();});
-	std::thread kruskalsThread([&] {timeit(&Lemon::kruskalsMinSpanningTree, L);});
+	std::thread weightedMatchingThread([&] {timeit(&Lemon::weightedMatching, L, WEIGHTEDMATCHING);});
+	std::thread kruskalsThread([&] {timeit(&Lemon::kruskalsMinSpanningTree, L, KRUSKAL);});
+	std::thread dijkstrasThread([&] {timeit(&Lemon::dijkstrasShortestPath, L, DIJKSTRA);});
 	//timeit((&Lemon::weightedMatching), L);
 	// L.kruskalsMinSpanningTree();
-	L.dijkstrasShortestPath();
+	//L.dijkstrasShortestPath();
 	
 	weightedMatchingThread.join();
 	kruskalsThread.join();
+	dijkstrasThread.join();
 	float result = (float)(clock() - beg) / CLOCKS_PER_SEC;
 	std::cout << "\n" << result << "s\n";
 	return 0;
 }
 
-/*void timeit(void(Lemon::*fptr)(void), Lemon& L) {
+void timeit(void(Lemon::*fptr)(void), Lemon& L, int i) {
 	clock_t beg = clock();
 	(L.*fptr)();
 	clock_t res = clock() - beg;
@@ -75,9 +71,9 @@ int main() {
 
 	//Can either pass the algName as a parameter or we can 
 	 // create a map of Lemon::*fptr to AlgName
-	//printResult(algName, result);
-	std::cout << "\n" << result << "s\n";
-}*/
+	printResult(L.funcName[i], result);
+	//std::cout << "\n" << result << "s\n";
+}
 
 void timeit(void(Data::*fptr)(void), Data& D) {
 	clock_t beg = clock();
