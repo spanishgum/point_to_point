@@ -8,10 +8,12 @@
 #define WEIGHTEDMATCHING 0
 #define KRUSKAL 1
 #define DIJKSTRA 2
+#define KRUSKDIJK 3
 
 
 void printResult(std::string, float);
 void timeit(void(Lemon::*fptr)(void), Lemon& L, int i);
+void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon& L, int i);
 void timeit(void(Data::*)(void), Data&);
 
 std::mutex mu;
@@ -46,6 +48,8 @@ int main() {
 	lemon::ListGraph LG;
 	Lemon L(D2.getGraph(), &LG, &LDG);
 	//L.test();
+	std::thread pureDijkstra ([&] {timeit(&Lemon::initDistributionCenter, L, DIJKSTRA);});
+	std::thread KruskalDijkstra ([&] {timeit2(&Lemon::kruskalsMinSpanningTree, &Lemon::initDistributionCenter, L, KRUSKDIJK);});
         /*	
 	clock_t beg = clock();	
 	std::thread weightedMatchingThread([&] {timeit(&Lemon::weightedMatching, L, WEIGHTEDMATCHING);});
@@ -75,6 +79,18 @@ void timeit(void(Lemon::*fptr)(void), Lemon& L, int i) {
 	 // create a map of Lemon::*fptr to AlgName
 	printResult(L.funcName[i], result);
 	//std::cout << "\n" << result << "s\n";
+}
+
+void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon& L, int i){
+	clock_t beg = clock();
+
+	(L.*spanTree)();
+	//Need to convert this to directed graph possibly at this point
+	(L.*shortPath)();
+
+	clock_t result = (float)(clock() - beg) / CLOCKS_PER_SEC;
+
+	printResult(L.funcName[i], result);
 }
 
 void timeit(void(Data::*fptr)(void), Data& D) {
