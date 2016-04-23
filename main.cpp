@@ -59,7 +59,7 @@ int main() {
 	kruskalsThread.join();
 	dijkstrasThread.join();
 	float result = (float)(clock() - beg) / CLOCKS_PER_SEC;
-	std::cout << "\n" << result << "s\n";
+	std::cout << "\nTime it took for all of the algs to run in parallel: " << result << " seconds\n";
 	return 0;
 }
 
