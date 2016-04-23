@@ -47,7 +47,7 @@ int main() {
 	Lemon L(D2.getGraph(), &LG);
 	//L.test();
 	std::thread pureDijkstra ([&] {timeit(&Lemon::initDistributionCenter, L, DIJKSTRA);});
-	std::thread KruskalDijkstra ([&] {timeit2(&Lemon::kruskalsMinSpanningTree, &Lemon::initDistributionCenter, L, KRUSKDIJK);});
+	std::thread KruskalDijkstra ([&] {timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L, KRUSKDIJK);});
 
 	pureDijkstra.join();
 	KruskalDijkstra.join();

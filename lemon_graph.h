@@ -39,6 +39,7 @@ class Lemon {
 	public:
 		Lemon(std::vector<Vertex>, ListGraph *);
 		~Lemon();
+                void kruskalsTrim();
                 void initDistributionCenter();
 		void test();
 		int getN2idx(ListGraph::Node);

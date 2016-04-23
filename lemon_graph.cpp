@@ -34,6 +34,8 @@ Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g)
 			this->e2n[E] = std::make_pair(e_i, e_j);	
         }
 	}
+
+    //this->kruskalsTrim(); 
     //this->initDistributionCenter();
 }
 
@@ -77,7 +79,7 @@ void Lemon::initDistributionCenter() {
     int cur, min = std::numeric_limits<int>::max();
 
     for (auto n : this->idx2n) {
-        if ((cur = dijkstrasTotalMinDistance(n.second)) < min) {
+        if ((cur = dijkstrasTotalMinDistance(n.second)) <= min) {
             this->disCenter.first = n.first;
             this->disCenter.second = n.second;
             min = cur;
@@ -118,6 +120,23 @@ int Lemon::getN2idx(ListGraph::Node n){
 	return n2idx[n];
 }
 
+void Lemon::kruskalsTrim() {
+    std::cout << "Running KruskalsTrim...\n";
+
+    ListGraph::EdgeMap<bool> treeMap(*this->graph);
+	std::cout << "\nWeight of the minimum spanning tree: " 
+		<< kruskal(*this->graph, this->weights, treeMap) << "\n";
+	for (ListGraph::EdgeIt e(*this->graph); e != INVALID; ++e) {
+		if (treeMap[e]) {
+			// std::cout << this->graph->id(e) << "\n";
+			//std::cout << e2n[e].first << ":" << e2n[e].second << "\n";
+		} else {
+           this->graph->erase(e); 
+           this->weights[e] = 0;
+        }
+	}
+}
+
 void Lemon::kruskalsMinSpanningTree() {
 	ListGraph::EdgeMap<bool> treeMap(*this->graph);
 	std::cout << "\nWeight of the minimum spanning tree: " 
@@ -126,9 +145,9 @@ void Lemon::kruskalsMinSpanningTree() {
 	for (ListGraph::EdgeIt e(*this->graph); e != INVALID; ++e) {
 		if (treeMap[e]) {
 			// std::cout << this->graph->id(e) << "\n";
-			std::cout << e2n[e].first << ":" << e2n[e].second << "\n";
+			//std::cout << e2n[e].first << ":" << e2n[e].second << "\n";
 			++k;
-		}
+		} 
 	}
 	std::cout << "\n";	
 }
