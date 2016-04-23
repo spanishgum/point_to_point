@@ -34,7 +34,7 @@ Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g)
 			this->e2n[E] = std::make_pair(e_i, e_j);	
         }
 	}
-    this->initDistributionCenter();
+    //this->initDistributionCenter();
 }
 
 Lemon::~Lemon() {

@@ -49,7 +49,7 @@ int main() {
 	std::thread pureDijkstra ([&] {timeit(&Lemon::initDistributionCenter, L, DIJKSTRA);});
 	std::thread KruskalDijkstra ([&] {timeit2(&Lemon::kruskalsMinSpanningTree, &Lemon::initDistributionCenter, L, KRUSKDIJK);});
 
-	pureDijkstra.detach();
+	pureDijkstra.join();
 	KruskalDijkstra.detach();
         /*	
 	clock_t beg = clock();	
