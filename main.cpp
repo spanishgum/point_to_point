@@ -50,7 +50,7 @@ int main() {
 	std::thread KruskalDijkstra ([&] {timeit2(&Lemon::kruskalsMinSpanningTree, &Lemon::initDistributionCenter, L, KRUSKDIJK);});
 
 	pureDijkstra.join();
-	KruskalDijkstra.detach();
+	KruskalDijkstra.join();
         /*	
 	clock_t beg = clock();	
 	std::thread weightedMatchingThread([&] {timeit(&Lemon::weightedMatching, L, WEIGHTEDMATCHING);});
@@ -87,8 +87,8 @@ void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon&
 
 	(L.*spanTree)();
 	(L.*shortPath)();
-
-	clock_t result = (float)(clock() - beg) / CLOCKS_PER_SEC;
+	
+	float result = ((float)(clock() - beg)) / CLOCKS_PER_SEC;
 
 	printResult(L.funcName[i], result);
 }
