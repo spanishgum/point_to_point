@@ -43,7 +43,7 @@ Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g, ListDigraph *dg)
 		}
 	}
 
-        this->initDistributionCenter();
+        //this->initDistributionCenter();
 }
 
 Lemon::~Lemon() {

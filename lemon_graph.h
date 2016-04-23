@@ -40,12 +40,12 @@ class Lemon {
                 std::pair<int, ListDigraph::Node> disCenter;
 
 
-                void initDistributionCenter();
                 int dijkstrasTotalMinDistance(ListDigraph::Node &); 
 	        
 	public:
 		Lemon(std::vector<Vertex>, ListGraph *, ListDigraph *);
 		~Lemon();
+                void initDistributionCenter();
 		void test();
 		int getN2idx(ListGraph::Node);
 		void weightedMatching();
