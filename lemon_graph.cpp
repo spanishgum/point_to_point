@@ -42,6 +42,8 @@ Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g, ListDigraph *dg)
                         this->weightsDi[a] = w;
 		}
 	}
+
+        this->initDistributionCenter();
 }
 
 Lemon::~Lemon() {
@@ -69,6 +71,27 @@ void Lemon::test() {
                       << ") -  " << this->weightsDi[a] << std::endl;;
         }
         */
+}
+
+/*
+ *  Runs Dijkstra's algorithm on each node to every
+ *  other node and selects the node, that provides
+ *  the total minimum distance, as the distribution
+ *  center.
+ *
+ *  @param none
+ *  @return none
+ */
+void Lemon::initDistributionCenter() {
+    int cur, min = std::numeric_limits<int>::max();
+
+    for (auto n : this->idx2nDi) {
+        if ((cur = dijkstrasTotalMinDistance(n.second)) < min) {
+            this->disCenter.first = n.first;
+            this->disCenter.second = n.second;
+            min = cur;
+        }
+    }
 }
 
 void Lemon::weightedMatching() {
@@ -116,6 +139,23 @@ void Lemon::kruskalsMinSpanningTree() {
 		}
 	}
 	std::cout << "\n";	
+}
+
+/**
+ *  Determines the minimum total distance from the
+ *  source node to every other node in the graph.
+ *
+ *  @param s            Potential facility node 
+ *  @return             Total minimum distance to every node
+ */
+int Lemon::dijkstrasTotalMinDistance(ListDigraph::Node &s) {
+    int distance = 0;
+    for (auto t : this->idx2nDi) {
+        auto d = Dijkstra<ListDigraph, ListDigraph::ArcMap<float> >(*(this->digraph), this->weightsDi);
+        d.run(s);
+        distance += d.dist(t.second);
+    }
+    return distance;
 }
 
 void Lemon::dijkstrasShortestPath() {

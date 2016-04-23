@@ -45,8 +45,8 @@ int main() {
 	
 	lemon::ListGraph LG;
 	Lemon L(D2.getGraph(), &LG, &LDG);
-	L.test();
-	
+	//L.test();
+        /*	
 	clock_t beg = clock();	
 	std::thread weightedMatchingThread([&] {timeit(&Lemon::weightedMatching, L, WEIGHTEDMATCHING);});
 	std::thread kruskalsThread([&] {timeit(&Lemon::kruskalsMinSpanningTree, L, KRUSKAL);});
@@ -60,6 +60,8 @@ int main() {
 	dijkstrasThread.join();
 	float result = (float)(clock() - beg) / CLOCKS_PER_SEC;
 	std::cout << "\nTime it took for all of the algs to run in parallel: " << result << " seconds\n";
+
+        */
 	return 0;
 }
 

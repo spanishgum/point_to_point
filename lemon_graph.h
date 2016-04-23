@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <map>
+#include <limits>
 
 
 #include "import.h"
@@ -35,6 +36,12 @@ class Lemon {
                 ListDigraph::ArcMap<int> arcMap;
                 ListDigraph::NodeMap<int> n2idxDi;
                 std::map<int, ListDigraph::Node> idx2nDi;
+                
+                std::pair<int, ListDigraph::Node> disCenter;
+
+
+                void initDistributionCenter();
+                int dijkstrasTotalMinDistance(ListDigraph::Node &); 
 	        
 	public:
 		Lemon(std::vector<Vertex>, ListGraph *, ListDigraph *);
