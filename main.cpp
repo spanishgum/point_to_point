@@ -43,13 +43,14 @@ int main() {
 	// D2.testImport();
 	
 	
-	lemon::ListDigraph LDG;
-	
 	lemon::ListGraph LG;
-	Lemon L(D2.getGraph(), &LG, &LDG);
+	Lemon L(D2.getGraph(), &LG);
 	//L.test();
 	std::thread pureDijkstra ([&] {timeit(&Lemon::initDistributionCenter, L, DIJKSTRA);});
 	std::thread KruskalDijkstra ([&] {timeit2(&Lemon::kruskalsMinSpanningTree, &Lemon::initDistributionCenter, L, KRUSKDIJK);});
+
+	pureDijkstra.detach();
+	KruskalDijkstra.detach();
         /*	
 	clock_t beg = clock();	
 	std::thread weightedMatchingThread([&] {timeit(&Lemon::weightedMatching, L, WEIGHTEDMATCHING);});
@@ -85,7 +86,6 @@ void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon&
 	clock_t beg = clock();
 
 	(L.*spanTree)();
-	//Need to convert this to directed graph possibly at this point
 	(L.*shortPath)();
 
 	clock_t result = (float)(clock() - beg) / CLOCKS_PER_SEC;
