@@ -4,6 +4,7 @@
 #include <functional>
 #include <thread>
 #include <mutex>
+#include <chrono>
 
 #define WEIGHTEDMATCHING 0
 #define KRUSKAL 1
@@ -19,12 +20,15 @@ void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon&
 void timeit(void(Data::*)(void), Data&);
 
 std::mutex mu;
+typedef std::chrono::milliseconds milliseconds;
+typedef std::chrono::microseconds microseconds;
+typedef std::chrono::seconds seconds;
 
 int main() {
 	
-	std::string testSyntheticFile = "n1000.dat";
-	std::string testSyntheticGraph = "n1000.graph";
-	DataFile N10(testSyntheticFile, 1000);
+	std::string testSyntheticFile = "n100.dat";
+	std::string testSyntheticGraph = "n100.graph";
+	DataFile N10(testSyntheticFile, 100);
 	Data D0(N10);
 	timeit(&Data::createGraph, D0); 
 	//D0.createGraph();
@@ -34,14 +38,14 @@ int main() {
 	Lemon D0_L(D0.getGraph(), &D0_LG);
 	Lemon D0_L2(D0.getGraph(), &D0_LG2);
         Lemon D0_L3(D0.getGraph(), &D0_LG3);
-	//timeit(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
+	timeit(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
 	std::cout << "Starting Algos" << std::endl;
-	//timeit(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
+	timeit(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
-	//timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
+	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
 	timeit(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
 
-	exit(0);
+	//exit(0);
 
 	std::cout << "\nTesting KN57\n-------------------\n\n";
 	DataFile KN57("KN57/dist.txt", 57);
@@ -118,16 +122,24 @@ int main() {
  *
  */
 void timeit(void(Lemon::*fptr)(void), Lemon& L, int i) {
-	clock_t beg = clock();
-	(L.*fptr)();
-	clock_t res = clock() - beg;
-	float result = ((float)res) / CLOCKS_PER_SEC;
+	//clock_t beg = clock();
+        
+        seconds beg = std::chrono::duration_cast<seconds>
+                    (std::chrono::system_clock::now().time_since_epoch()); 
 
-	int minute = result / 60;
-	float seconds = result - (minute * 60);
+	(L.*fptr)();
+
+	seconds end = std::chrono::duration_cast<seconds>
+                    (std::chrono::system_clock::now().time_since_epoch());
+        	
+	std::cout << "Time it took " << L.funcName[i] << " to complete: " << end.count() - beg.count() << "\n\n";
+
+
+	//int minute = result / 60;
+	//float seconds = result - (minute * 60);
 
 	//Can either pass the algName as a parameter or we can 
-	printResult(L.funcName[i], minute, seconds);
+	//printResult(L.funcName[i], minute, seconds);
 	
 }
 
@@ -141,18 +153,25 @@ void timeit(void(Lemon::*fptr)(void), Lemon& L, int i) {
  *
  */
 void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon& L, int i){
-	clock_t beg = clock();
+	//clock_t beg = clock();
+        seconds beg = std::chrono::duration_cast<seconds>
+                    (std::chrono::system_clock::now().time_since_epoch()); 
 
 	(L.*spanTree)();
 	(L.*shortPath)();
-	
-	float result = ((float)(clock() - beg)) / CLOCKS_PER_SEC;
 
-	int minute = result / 60;
-	float seconds = result - (minute * 60);
+        seconds end = std::chrono::duration_cast<seconds>
+                    (std::chrono::system_clock::now().time_since_epoch());
+        	
+	std::cout << "Time it took " << L.funcName[i] << " to complete: " << end.count() - beg.count() << "\n\n";
+
+	//float result = ((float)(clock() - beg)) / CLOCKS_PER_SEC;
+
+	//int minute = result / 60;
+	//float seconds = result - (minute * 60);
 
 	//Can either pass the algName as a parameter or we can 
-	printResult(L.funcName[i], minute, seconds);
+	//printResult(L.funcName[i], minute, seconds);
 }
 
 /*
@@ -164,11 +183,21 @@ void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon&
  *
  */
 void timeit(void(Data::*fptr)(void), Data& D) {
-	clock_t beg = clock();
-	(D.*fptr)();
-	clock_t res = clock() - beg;
-	float result = ((float)res) / CLOCKS_PER_SEC;
-	std::cout << "\n" << result << "s\n";
+	//clock_t beg = clock();
+        seconds beg = std::chrono::duration_cast<seconds>
+                    (std::chrono::system_clock::now().time_since_epoch()); 
+
+        (D.*fptr)();
+
+        seconds end = std::chrono::duration_cast<seconds>
+                    (std::chrono::system_clock::now().time_since_epoch());
+        	
+	std::cout << "Time it took to complete: " << end.count() - beg.count() << "\n\n";
+
+
+	//clock_t res = clock() - beg;
+	//float result = ((float)res) / CLOCKS_PER_SEC;
+	//std::cout << "\n" << result << "s\n";
 }
 
 /*This function allows us to print the times for each function on seperate threads
