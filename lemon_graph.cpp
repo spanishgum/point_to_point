@@ -67,15 +67,34 @@ void Lemon::test() {
 }
 
 /*
- *  Runs Dijkstra's algorithm on each node to every
- *  other node and selects the node, that provides
- *  the total minimum distance, as the distribution
- *  center.
+ *  Runs Dijkstra's algorithm in parallel on each 
+ *  node to every other node and selects the node,
+ *  that provides the total minimum distance, as
+ *  the distribution center.
  *
  *  @param none
  *  @return none
  */
 void Lemon::initDistributionCenter() {
+    int cur, min = std::numeric_limits<int>::max();
+    std::vector<std::future<int>> distances;
+
+    for (unsigned int i = 0; i < this->idx2n.size(); ++i) 
+        distances.push_back(std::async(std::launch::async, &Lemon::dijkstrasTotalMinDistance, this, std::ref(this->idx2n[i])));
+
+    for (unsigned int i = 0; i < this->idx2n.size(); ++i) {
+        // Thread waits for computation to end on call to get()
+        if ((cur = distances[i].get()) <= min) {
+            this->disCenter.first = i; 
+            this->disCenter.second = this->idx2n[i];
+            min = cur;
+        }
+    }
+    
+    std::cout << "DistributionCenter: " << disCenter.first << std::endl;
+}
+
+void Lemon::initDistributionCenterSeq() {
     int cur, min = std::numeric_limits<int>::max();
 
     for (auto n : this->idx2n) {
@@ -87,6 +106,7 @@ void Lemon::initDistributionCenter() {
     }
     std::cout << "DistributionCenter: " << disCenter.first << std::endl;
 }
+
 
 void Lemon::weightedMatching() {
 	MaxWeightedMatching< ListGraph, ListGraph::EdgeMap<float> > 
@@ -172,31 +192,22 @@ int Lemon::dijkstrasTotalMinDistance(ListGraph::Node &s) {
 void Lemon::dijkstrasShortestPath() {
 
     std::cout << "Dijkstra Shortest Path" << std::endl;
-    
-    // Facility node
-    std::srand(std::time(NULL));
-    std::map<int, ListGraph::Node>::iterator startPair = idx2n.begin();
-    std::advance(startPair, std::rand() % idx2n.size());
-    ListGraph::Node s = startPair->second;
-
-    std::cout << "Facility Node: " << this->graph->id(s) << std::endl;
-   
-    
+        
     for (auto t : this->idx2n) {
         auto d = Dijkstra<ListGraph, ListGraph::EdgeMap<float> >(*(this->graph), this->weights);
-        d.run(s);
+        d.run(this->disCenter.second);
 
         std::cout << "The distance of node t from node s: "
                   << d.dist(t.second) << std::endl;
 
-        std::cout << "Shortest path from " << this->graph->id(s) << " to "
+        std::cout << "Shortest path from " << this->graph->id(disCenter.second) << " to "
                   << this->graph->id(t.second)
                   << " goes through the following nodes: ";
         
-        for (ListGraph::Node v = t.second; v != s; v = d.predNode(v)) {
+        for (ListGraph::Node v = t.second; v != disCenter.second; v = d.predNode(v)) {
             std::cout << this->graph->id(v) << "->";
         }
-        std::cout << this->graph->id(s) << std::endl;
+        std::cout << this->graph->id(disCenter.second) << std::endl;
     }
     
 }

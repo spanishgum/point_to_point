@@ -41,7 +41,16 @@ int main() {
 	D2.outputGraph("HA30/test_out.txt");
 	D2.importGraph("HA30/test_out.txt");
 	// D2.testImport();
-	
+
+        lemon::ListGraph LG2;
+        Lemon L2(D1.getGraph(), &LG2);
+        std::thread pureDijkstra ([&] {timeit(&Lemon::initDistributionCenter, L2, DIJKSTRA);});
+	std::thread KruskalDijkstra ([&] {timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L2, KRUSKDIJK);});
+
+	pureDijkstra.join();
+	KruskalDijkstra.join();
+
+        /*	
 	
 	lemon::ListGraph LG;
 	Lemon L(D2.getGraph(), &LG);
@@ -51,6 +60,7 @@ int main() {
 
 	pureDijkstra.join();
 	KruskalDijkstra.join();
+
         /*	
 	clock_t beg = clock();	
 	std::thread weightedMatchingThread([&] {timeit(&Lemon::weightedMatching, L, WEIGHTEDMATCHING);});

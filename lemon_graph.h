@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <map>
 #include <limits>
+#include <future>
 
 
 #include "import.h"
@@ -41,6 +42,7 @@ class Lemon {
 		~Lemon();
                 void kruskalsTrim();
                 void initDistributionCenter();
+                void initDistributionCenterSeq();
 		void test();
 		int getN2idx(ListGraph::Node);
 		void weightedMatching();
@@ -48,7 +50,10 @@ class Lemon {
 		void kruskalsMinSpanningTree();
 		void dijkstrasShortestPath();
 
-		const std::vector<std::string> funcName = { "Weighted Matching", "Kruskal", "Dijkstra", "Kruskal's & Dijkstra's Combo" };
+		const std::vector<std::string> funcName = { "Weighted Matching",
+                                                            "Kruskal", 
+                                                            "Dijkstra", 
+                                                            "Kruskal's & Dijkstra's Combo" };
 
 };
 
