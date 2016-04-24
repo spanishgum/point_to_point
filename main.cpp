@@ -13,7 +13,7 @@
 #define DIJKSTRASEQ 5
 
 
-void printResult(std::string, float);
+void printResult(std::string, int, float);
 void timeit(void(Lemon::*fptr)(void), Lemon& L, int i);
 void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon& L, int i);
 void timeit(void(Data::*)(void), Data&);
@@ -26,20 +26,22 @@ int main() {
 	std::string testSyntheticGraph = "n1000.graph";
 	DataFile N10(testSyntheticFile, 1000);
 	Data D0(N10);
-	D0.createGraph();
+	timeit(&Data::createGraph, D0); 
+	//D0.createGraph();
 	D0.outputGraph(testSyntheticGraph);
 	D0.importGraph(testSyntheticGraph);
 	lemon::ListGraph D0_LG, D0_LG2, D0_LG3;
 	Lemon D0_L(D0.getGraph(), &D0_LG);
 	Lemon D0_L2(D0.getGraph(), &D0_LG2);
         Lemon D0_L3(D0.getGraph(), &D0_LG3);
-	timeit(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
-	timeit(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
+	//timeit(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
+	std::cout << "Starting Algos" << std::endl;
+	//timeit(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
-	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
+	//timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
 	timeit(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
 
-	//exit(0);
+	exit(0);
 
 	std::cout << "\nTesting KN57\n-------------------\n\n";
 	DataFile KN57("KN57/dist.txt", 57);
@@ -72,10 +74,10 @@ int main() {
         Lemon L5(D2.getGraph(), &LG5);
         Lemon L6(D2.getGraph(), &LG6);
 
-        timeit(&Lemon::initDistributionCenterSeq, L4, DIJKSTRASEQ);
+        //timeit(&Lemon::initDistributionCenterSeq, L4, DIJKSTRASEQ);
 	timeit(&Lemon::initDistributionCenter, L4, DIJKSTRA);
     
-        timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L5, KRUSKDIJKSEQ);
+        //timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L5, KRUSKDIJKSEQ);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L6, KRUSKDIJK);
 
 	timeit(&Lemon::kruskalsTrim, L4, KRUSKAL);
@@ -121,8 +123,11 @@ void timeit(void(Lemon::*fptr)(void), Lemon& L, int i) {
 	clock_t res = clock() - beg;
 	float result = ((float)res) / CLOCKS_PER_SEC;
 
+	int minute = result / 60;
+	float seconds = result - (minute * 60);
+
 	//Can either pass the algName as a parameter or we can 
-	printResult(L.funcName[i], result);
+	printResult(L.funcName[i], minute, seconds);
 	
 }
 
@@ -143,7 +148,11 @@ void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon&
 	
 	float result = ((float)(clock() - beg)) / CLOCKS_PER_SEC;
 
-	printResult(L.funcName[i], result);
+	int minute = result / 60;
+	float seconds = result - (minute * 60);
+
+	//Can either pass the algName as a parameter or we can 
+	printResult(L.funcName[i], minute, seconds);
 }
 
 /*
@@ -177,10 +186,10 @@ void timeit(void(Data::*fptr)(void), Data& D) {
  * @Note: 		The mutex is not needed with the currently implementation since the algorithms
  * 			are run sequentially and not in parallel
  */
-void printResult(std::string algName, float result){
+void printResult(std::string algName, int min, float sec){
 	mu.lock();
 	
-	std::cout << "Time it took " << algName << " to complete: " << result << " seconds\n\n";
+	std::cout << "Time it took " << algName << " to complete: " << min << ":" << sec << "\n\n";
 	//could also store results here if we wanted to use them for comparison later
 	
 	mu.unlock();
