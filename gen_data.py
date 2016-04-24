@@ -20,9 +20,11 @@ def main():
             sys.exit()
 
     matrix = gen(n)
-    for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
+    for i in range(n):
+        for j in range(n):
+            #print matrix[i][j], ' '
             sys.stdout.write(str(matrix[i][j]) + ' ')
+        #print '\n'
         sys.stdout.write('\n')
 
 def gen(n):

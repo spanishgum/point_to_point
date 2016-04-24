@@ -21,6 +21,25 @@ void timeit(void(Data::*)(void), Data&);
 std::mutex mu;
 
 int main() {
+	
+	std::string testSyntheticFile = "n10.dat";
+	std::string testSyntheticGraph = "n10.graph";
+	DataFile N10(testSyntheticFile, 10);
+	Data D0(N10);
+	D0.createGraph();
+	D0.outputGraph(testSyntheticGraph);
+	D0.importGraph(testSyntheticGraph);
+	lemon::ListGraph D0_LG, D0_LG2, D0_LG3;
+	Lemon D0_L(D0.getGraph(), &D0_LG);
+	Lemon D0_L2(D0.getGraph(), &D0_LG2);
+        Lemon D0_L3(D0.getGraph(), &D0_LG3);
+	timeit(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
+	timeit(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
+	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
+	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
+	timeit(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
+
+	exit(0);
 
 	std::cout << "\nTesting KN57\n-------------------\n\n";
 	DataFile KN57("KN57/dist.txt", 57);
