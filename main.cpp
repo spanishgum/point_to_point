@@ -39,11 +39,9 @@ int main() {
     
         timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L2, KRUSKDIJKSEQ);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L3, KRUSKDIJK);
+       
+	timeit(&Lemon::kruskalsTrim, L, KRUSKAL);
 
-        lemon::ListGraph LG8;
-	Lemon L8(D1.getGraph(), &LG8);
-        timeit(&Lemon::kruskalsTrim, L8, KRUSKAL);
-        
 	std::cout << "\nTesting HA30\n-------------------\n\n";
 	DataFile HA30("HA30/dist.txt", 30);
 	Data D2(HA30);
@@ -61,9 +59,7 @@ int main() {
         timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L5, KRUSKDIJKSEQ);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L6, KRUSKDIJK);
 
-        lemon::ListGraph LG7;
-	Lemon L7(D2.getGraph(), &LG7);
-        timeit(&Lemon::kruskalsTrim, L7, KRUSKAL);
+	timeit(&Lemon::kruskalsTrim, L4, KRUSKAL);
 
         /*
         lemon::ListGraph LG2;
@@ -88,25 +84,18 @@ int main() {
         KruskalDijkstraSeq.join();
 	KruskalDijkstra.join();
         */
-        /*	
-	clock_t beg = clock();	
-	std::thread weightedMatchingThread([&] {timeit(&Lemon::weightedMatching, L, WEIGHTEDMATCHING);});
-	std::thread kruskalsThread([&] {timeit(&Lemon::kruskalsMinSpanningTree, L, KRUSKAL);});
-	std::thread dijkstrasThread([&] {timeit(&Lemon::dijkstrasShortestPath, L, DIJKSTRA);});
-	//timeit((&Lemon::weightedMatching), L);
-	// L.kruskalsMinSpanningTree();
-	//L.dijkstrasShortestPath();
-	
-	weightedMatchingThread.join();
-	kruskalsThread.join();
-	dijkstrasThread.join();
-	float result = (float)(clock() - beg) / CLOCKS_PER_SEC;
-	std::cout << "\nTime it took for all of the algs to run in parallel: " << result << " seconds\n";
-
-        */
 	return 0;
 }
 
+/*
+ * #timeit(void(Lemon::*fptr)(void), Lemon&, int)
+ *
+ * @Parameters:		Pointer to a lemon function, the Lemon object, and an int
+ * 			index into the funcName vector
+ * @Fucntionality:	Times the functions passed to be used for a comparison of running time
+ * @Return:		
+ *
+ */
 void timeit(void(Lemon::*fptr)(void), Lemon& L, int i) {
 	clock_t beg = clock();
 	(L.*fptr)();
@@ -114,11 +103,19 @@ void timeit(void(Lemon::*fptr)(void), Lemon& L, int i) {
 	float result = ((float)res) / CLOCKS_PER_SEC;
 
 	//Can either pass the algName as a parameter or we can 
-	// create a map of Lemon::*fptr to AlgName
 	printResult(L.funcName[i], result);
-	//std::cout << "\n" << result << "s\n";
+	
 }
 
+/*
+ * #timeit2(void(Lemon::*fptr)(void), void(Lemon::*fptr)(void), Lemon&, int)
+ *
+ * @Parameters:		Pointer to a lemon function, Pointer to a lemon function, the Lemon object, and an int
+ * 			index into the funcName vector
+ * @Fucntionality:	Times the functions passed to be used for a comparison of running time
+ * @Return:		
+ *
+ */
 void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon& L, int i){
 	clock_t beg = clock();
 
@@ -130,6 +127,14 @@ void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon&
 	printResult(L.funcName[i], result);
 }
 
+/*
+ * #timeit(void(Data::*fptr)(void), Data&)
+ *
+ * @Parameters:		Pointer to a Data function, the Data object
+ * @Fucntionality:	Times the functions passed to be used for a comparison of running time
+ * @Return:		
+ *
+ */
 void timeit(void(Data::*fptr)(void), Data& D) {
 	clock_t beg = clock();
 	(D.*fptr)();
@@ -140,6 +145,19 @@ void timeit(void(Data::*fptr)(void), Data& D) {
 
 /*This function allows us to print the times for each function on seperate threads
  * without the chance of them trying to print out at the same time*/
+
+
+/*
+ * #printResult(string, float)
+ *
+ * @Parameters:		the string is the name of an algorithm being run and the in is the
+ * 			time it took to run the algorithm
+ * @Fucntionality:	Prints the time it took to run an algorithm
+ * @Return:		
+ *
+ * @Note: 		The mutex is not needed with the currently implementation since the algorithms
+ * 			are run sequentially and not in parallel
+ */
 void printResult(std::string algName, float result){
 	mu.lock();
 	
