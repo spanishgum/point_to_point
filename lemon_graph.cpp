@@ -7,7 +7,7 @@
  *  @param g                    Empty LisGraph Object
  */
 Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g) 
-	: graph(g), weights(*g), n2idx(*g), e2n(*g) {
+	: graph(g), weights(*g), n2idx(*g), e2n(*g), numThreads(50) {
 
 	for (auto v : adjacency_list) {
 		ListGraph::Node n = this->graph->addNode();
@@ -24,6 +24,8 @@ Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g)
         }
 	}
 
+    if (this->idx2n.size() < numThreads)
+        this->numThreads = this->idx2n.size();
 }
 
 /**
@@ -47,18 +49,26 @@ Lemon::~Lemon() {
  */
 void Lemon::initDistributionCenter() {
     float cur, min = std::numeric_limits<float>::max();
-    std::vector<std::future<float>> distances;
-
-    for (unsigned int i = 0; i < this->idx2n.size(); ++i) 
-        distances.push_back(std::async(std::launch::async, &Lemon::dijkstrasTotalMinDistance, this, std::ref(this->idx2n[i])));
-
-    for (unsigned int i = 0; i < this->idx2n.size(); ++i) {
-        // Thread waits for computation to end on call to get()
-        if ((cur = distances[i].get()) <= min) {
-            this->disCenter.first = i; 
-            this->disCenter.second = this->idx2n[i];
-            min = cur;
+    unsigned int NUM_NODES = this->idx2n.size();
+    
+    for (unsigned int t = 0; t < std::ceil(NUM_NODES / this->numThreads); ++t) { 
+        std::vector<std::future<float>> distances;
+        for (unsigned int i = t*this->numThreads; i < (t+1)*this->numThreads && i < this->idx2n.size(); ++i) {
+            distances.push_back(std::async(std::launch::async,
+                                            &Lemon::dijkstrasTotalMinDistance,
+                                            this,
+                                            std::ref(this->idx2n[i])));
         }
+
+        for (unsigned int i = t*this->numThreads, j = 0; i < (t+1)*this->numThreads && i < this->idx2n.size(); ++i, ++j) {
+            // Thread waits for computation to end on call to get()
+            if ((cur = distances[j].get()) <= min) {
+                this->disCenter.first = i; 
+                this->disCenter.second = this->idx2n[i];
+                min = cur;
+            }
+        }
+        distances.clear();
     }
     
     std::cout << "Found DistributionCenter: " << disCenter.first 

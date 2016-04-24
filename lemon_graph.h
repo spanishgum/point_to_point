@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <map>
+#include <cmath>
 #include <limits>
 #include <future>
 
@@ -33,6 +34,7 @@ class Lemon {
 		std::map<int, ListGraph::Node> idx2n;               // Mapping of Node id to Node
 		ListGraph::EdgeMap< std::pair<int, int> > e2n;      // Source-Target edge structure
         std::pair<int, ListGraph::Node> disCenter;          // Distribution Center
+        unsigned int numThreads;
 
         float dijkstrasTotalMinDistance(ListGraph::Node &); 
 	        

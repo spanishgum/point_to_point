@@ -22,9 +22,9 @@ std::mutex mu;
 
 int main() {
 	
-	std::string testSyntheticFile = "n10.dat";
-	std::string testSyntheticGraph = "n10.graph";
-	DataFile N10(testSyntheticFile, 10);
+	std::string testSyntheticFile = "n1000.dat";
+	std::string testSyntheticGraph = "n1000.graph";
+	DataFile N10(testSyntheticFile, 1000);
 	Data D0(N10);
 	D0.createGraph();
 	D0.outputGraph(testSyntheticGraph);
@@ -39,7 +39,7 @@ int main() {
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
 	timeit(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
 
-	exit(0);
+	//exit(0);
 
 	std::cout << "\nTesting KN57\n-------------------\n\n";
 	DataFile KN57("KN57/dist.txt", 57);
