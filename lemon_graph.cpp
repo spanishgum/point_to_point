@@ -1,22 +1,11 @@
 #include "lemon_graph.h"
 
-
-/*
-GOALS:
--graph connectivity
--max weighed matching
-minimum cost flow analysis
-minimum Steiner trees
-sub graph matching
-min and max cuts
-parallel algorithms
-
-*/
-
-
-
-
-
+/**
+ *  Configures Lemon Object
+ *
+ *  @param adjacency_list       List of grpah vertices
+ *  @param g                    Empty LisGraph Object
+ */
 Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g) 
 	: graph(g), weights(*g), n2idx(*g), e2n(*g) {
 
@@ -37,33 +26,17 @@ Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g)
 
 }
 
+/**
+ *  ~Destructor
+ *
+ *  @param none
+ *  @return none
+ */
 Lemon::~Lemon() {
 
 }
 
-void Lemon::test() {
-        /*
-	for (ListGraph::NodeIt n(*this->graph); n != INVALID; ++n)
-	    std::cout << n2idx[n] << " ";
-	std::cout << "\n";
-	for (ListGraph::EdgeIt e(*this->graph); e != INVALID; ++e)
-        		std::cout << weights[e] << " ";
-        std::cout << "\n";
-	for (auto n : this->n2idx)
-	    std::cout << n << " ";
-	std::cout << "\n";
-	for (auto n : this->idx2n)
-	    std::cout << n << " ";
-	std::cout << "\n";
-
-        for (ListDigraph::ArcIt a(*this->digraph); a != INVALID; ++a) {
-            std::cout << "(" << this->digraph->id(this->digraph->source(a)) 
-                      << "," << this->digraph->id(this->digraph->target(a))
-                      << ") -  " << this->weightsDi[a] << std::endl;;
-        }*/
-}
-
-/*
+/**
  *  Runs Dijkstra's algorithm in parallel on each 
  *  node to every other node and selects the node,
  *  that provides the total minimum distance, as
@@ -92,6 +65,15 @@ void Lemon::initDistributionCenter() {
               << " Total Distance: " << min <<  std::endl;
 }
 
+/**
+ *  Runs Dijkstra's algorithm, sequentially,  on each 
+ *  node to every other node and selects the node
+ *  that provides the total minimum distance, as
+ *  the distribution center.
+ *
+ *  @param none
+ *  @return none
+ */
 void Lemon::initDistributionCenterSeq() {
     float cur, min = std::numeric_limits<float>::max();
 
@@ -106,6 +88,13 @@ void Lemon::initDistributionCenterSeq() {
               << " Total Distane: " << min << std::endl;
 }
 
+/**
+ *  Performs Edmond's blossom shrinking algorithm to calculate
+ *  maximum weighted matching in an undirected graph.
+ *
+ *  @param none
+ *  @return none
+ */
 void Lemon::weightedMatching() {
 	MaxWeightedMatching< ListGraph, ListGraph::EdgeMap<float> > 
 		M(*(this->graph), this->weights);
@@ -120,6 +109,13 @@ void Lemon::weightedMatching() {
 		std::cout << r.first << ":" << r.second << "\n";
 }
 
+/**
+ *  Performs Edmond's blossom shrinking algorithm to calculate
+ *  maximum weighted matching in an undirected graph.
+ *
+ *  @param L                Lemon Object 
+ *  @return none
+ */
 void Lemon::weightedMatching(Lemon &L) {
 	MaxWeightedMatching< ListGraph, ListGraph::EdgeMap<float> > 
 		M(*(L.graph), L.weights);
@@ -138,6 +134,14 @@ int Lemon::getN2idx(ListGraph::Node n){
 	return n2idx[n];
 }
 
+/**
+ *  Performs Min Cost Arborescence's algorithm to determine
+ *  the minimum cost subgraph, spanning all nodes reachable
+ *  from the distribution center.
+ *
+ *  @param none
+ *  @return none
+ */
 void Lemon::minCost() {
     MinCostArborescence< ListGraph, ListGraph::EdgeMap<float >>
         M(*(this->graph), this->weights);
@@ -149,6 +153,13 @@ void Lemon::minCost() {
               << M.arborescenceCost() << std::endl;
 }
 
+/**
+ *  Performs Kruskals algorithm on this->graph, and
+ *  transforms it to a minimum cost spanning tree.
+ *
+ *  @param none
+ *  @return none
+ */
 void Lemon::kruskalsTrim() {
     std::cout << "Running KruskalsTrim...\n";
 
@@ -165,6 +176,12 @@ void Lemon::kruskalsTrim() {
 	}
 }
 
+/**
+ *  Finds a minimum cost spanning tree.
+ *
+ *  @param none
+ *  @return none
+ */
 void Lemon::kruskalsMinSpanningTree() {
 	ListGraph::EdgeMap<bool> treeMap(*this->graph);
 	std::cout << "\nWeight of the minimum spanning tree: " 
@@ -198,6 +215,13 @@ float Lemon::dijkstrasTotalMinDistance(ListGraph::Node &s) {
     return distance;
 }
 
+/**
+ *  Performs Dijkstra's algorithm to find theshortest paths
+ *  from the facility node, when all arc lengths are non-negative.
+ *
+ *  @param none
+ *  @return none
+ */
 void Lemon::dijkstrasShortestPath() {
 
     std::cout << "Dijkstra Shortest Path" << std::endl;
@@ -220,18 +244,3 @@ void Lemon::dijkstrasShortestPath() {
     }
     
 }
-
-
-
-// ListGraph *graph;
-// ListGraph::EdgeMap<float> weights;
-// ListGraph::NodeMap<int> n2idx;
-// std::map<int, ListGraph::Node> idx2n;
-
-
-
-// std::cout << v.id << " : ";
-// for (auto e : v.edges) {
-	// std::cout << e.first << "," << e.second << " ";
-// }
-// std::cout << std::endl;
