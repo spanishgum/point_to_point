@@ -35,8 +35,6 @@ Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g)
         }
 	}
 
-    //this->kruskalsTrim(); 
-    //this->initDistributionCenter();
 }
 
 Lemon::~Lemon() {
@@ -62,8 +60,7 @@ void Lemon::test() {
             std::cout << "(" << this->digraph->id(this->digraph->source(a)) 
                       << "," << this->digraph->id(this->digraph->target(a))
                       << ") -  " << this->weightsDi[a] << std::endl;;
-        }
-        */
+        }*/
 }
 
 /*
@@ -76,8 +73,8 @@ void Lemon::test() {
  *  @return none
  */
 void Lemon::initDistributionCenter() {
-    int cur, min = std::numeric_limits<int>::max();
-    std::vector<std::future<int>> distances;
+    float cur, min = std::numeric_limits<float>::max();
+    std::vector<std::future<float>> distances;
 
     for (unsigned int i = 0; i < this->idx2n.size(); ++i) 
         distances.push_back(std::async(std::launch::async, &Lemon::dijkstrasTotalMinDistance, this, std::ref(this->idx2n[i])));
@@ -91,11 +88,12 @@ void Lemon::initDistributionCenter() {
         }
     }
     
-    std::cout << "DistributionCenter: " << disCenter.first << std::endl;
+    std::cout << "Found DistributionCenter: " << disCenter.first 
+              << " Total Distance: " << min <<  std::endl;
 }
 
 void Lemon::initDistributionCenterSeq() {
-    int cur, min = std::numeric_limits<int>::max();
+    float cur, min = std::numeric_limits<float>::max();
 
     for (auto n : this->idx2n) {
         if ((cur = dijkstrasTotalMinDistance(n.second)) <= min) {
@@ -104,9 +102,9 @@ void Lemon::initDistributionCenterSeq() {
             min = cur;
         }
     }
-    std::cout << "DistributionCenter: " << disCenter.first << std::endl;
+    std::cout << "Found DistributionCenter: " << disCenter.first 
+              << " Total Distane: " << min << std::endl;
 }
-
 
 void Lemon::weightedMatching() {
 	MaxWeightedMatching< ListGraph, ListGraph::EdgeMap<float> > 
@@ -140,19 +138,29 @@ int Lemon::getN2idx(ListGraph::Node n){
 	return n2idx[n];
 }
 
+void Lemon::minCost() {
+    MinCostArborescence< ListGraph, ListGraph::EdgeMap<float >>
+        M(*(this->graph), this->weights);
+
+    M.init();
+    M.addSource(disCenter.second);
+    M.start();
+    std::cout << "Running Min Cost Arborescence: "
+              << M.arborescenceCost() << std::endl;
+}
+
 void Lemon::kruskalsTrim() {
     std::cout << "Running KruskalsTrim...\n";
 
     ListGraph::EdgeMap<bool> treeMap(*this->graph);
+
 	std::cout << "\nWeight of the minimum spanning tree: " 
 		<< kruskal(*this->graph, this->weights, treeMap) << "\n";
+
 	for (ListGraph::EdgeIt e(*this->graph); e != INVALID; ++e) {
 		if (treeMap[e]) {
-			// std::cout << this->graph->id(e) << "\n";
-			//std::cout << e2n[e].first << ":" << e2n[e].second << "\n";
-		} else {
            this->graph->erase(e); 
-           this->weights[e] = 0;
+           this->weights[e] = std::numeric_limits<float>::max();
         }
 	}
 }
@@ -179,13 +187,14 @@ void Lemon::kruskalsMinSpanningTree() {
  *  @param s            Potential facility node 
  *  @return             Total minimum distance to every node
  */
-int Lemon::dijkstrasTotalMinDistance(ListGraph::Node &s) {
-    int distance = 0;
+float Lemon::dijkstrasTotalMinDistance(ListGraph::Node &s) {
+    float distance = 0;
     for (auto t : this->idx2n) {
         auto d = Dijkstra<ListGraph, ListGraph::EdgeMap<float> >(*(this->graph), this->weights);
         d.run(s);
         distance += d.dist(t.second);
     }
+    //std::cout << this->n2idx[s] << " total min distance: " << distance << std::endl;
     return distance;
 }
 

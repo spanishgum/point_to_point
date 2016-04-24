@@ -21,6 +21,7 @@
 #include "lemon/matching.h"
 #include "lemon/kruskal.h"
 #include "lemon/dijkstra.h"
+#include "lemon/min_cost_arborescence.h"
 
 using namespace lemon;
 
@@ -35,11 +36,12 @@ class Lemon {
                 std::pair<int, ListGraph::Node> disCenter;
 
 
-                int dijkstrasTotalMinDistance(ListGraph::Node &); 
+                float dijkstrasTotalMinDistance(ListGraph::Node &); 
 	        
 	public:
 		Lemon(std::vector<Vertex>, ListGraph *);
 		~Lemon();
+                void minCost();
                 void kruskalsTrim();
                 void initDistributionCenter();
                 void initDistributionCenterSeq();
@@ -53,7 +55,10 @@ class Lemon {
 		const std::vector<std::string> funcName = { "Weighted Matching",
                                                             "Kruskal", 
                                                             "Dijkstra", 
-                                                            "Kruskal's & Dijkstra's Combo" };
+                                                            "Kruskal's & Dijkstra's Combo",
+                                                            "Kruskal's & Dijkstra's Combo Seq",
+                                                            "Dijkstra Seq" };
+
 
 };
 

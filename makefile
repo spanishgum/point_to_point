@@ -12,6 +12,8 @@ define HEADER
    |              Program XYZ - Version 0.0.0              |
    |                                                       |
    |                    Adam Stallard                      |
+   |                   Eric Serbousek                      |
+   |                    Travis Chung			   |
    |                                                       |
    ---------------------------------------------------------
 
