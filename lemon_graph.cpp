@@ -161,8 +161,6 @@ void Lemon::minCost() {
  *  @return none
  */
 void Lemon::kruskalsTrim() {
-    std::cout << "Running KruskalsTrim...\n";
-
     ListGraph::EdgeMap<bool> treeMap(*this->graph);
 
 	std::cout << "\nWeight of the minimum spanning tree: " 

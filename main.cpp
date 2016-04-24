@@ -39,6 +39,10 @@ int main() {
     
         timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L2, KRUSKDIJKSEQ);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L3, KRUSKDIJK);
+
+        lemon::ListGraph LG8;
+	Lemon L8(D1.getGraph(), &LG8);
+        timeit(&Lemon::kruskalsTrim, L8, KRUSKAL);
         
 	std::cout << "\nTesting HA30\n-------------------\n\n";
 	DataFile HA30("HA30/dist.txt", 30);
@@ -56,6 +60,10 @@ int main() {
     
         timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L5, KRUSKDIJKSEQ);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L6, KRUSKDIJK);
+
+        lemon::ListGraph LG7;
+	Lemon L7(D2.getGraph(), &LG7);
+        timeit(&Lemon::kruskalsTrim, L7, KRUSKAL);
 
         /*
         lemon::ListGraph LG2;
