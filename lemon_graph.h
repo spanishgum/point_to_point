@@ -27,46 +27,42 @@ using namespace lemon;
 
 class Lemon {
 	private:
-		ListGraph *graph;
-		ListGraph::EdgeMap<float> weights;
-		ListGraph::NodeMap<int> n2idx;
-		std::map<int, ListGraph::Node> idx2n;
-		ListGraph::EdgeMap< std::pair<int, int> > e2n;
+		ListGraph *graph;                                   // Undirected graph
+		ListGraph::EdgeMap<float> weights;                  // Edge value
+		ListGraph::NodeMap<int> n2idx;                      // Mapping of Node to Node id
+		std::map<int, ListGraph::Node> idx2n;               // Mapping of Node id to Node
+		ListGraph::EdgeMap< std::pair<int, int> > e2n;      // Source-Target edge structure
+        std::pair<int, ListGraph::Node> disCenter;          // Distribution Center
 
-                std::pair<int, ListGraph::Node> disCenter;
-
-
-                float dijkstrasTotalMinDistance(ListGraph::Node &); 
+        float dijkstrasTotalMinDistance(ListGraph::Node &); 
 	        
 	public:
 		Lemon(std::vector<Vertex>, ListGraph *);
 		~Lemon();
-                void minCost();
-                void kruskalsTrim();
-                void initDistributionCenter();
-                void initDistributionCenterSeq();
-		void test();
+
+        void initDistributionCenter();
+        void initDistributionCenterSeq();
+
+        /*  Accessors   */
 		int getN2idx(ListGraph::Node);
-		void weightedMatching();
-		static void weightedMatching(Lemon&);
+
+        /*  Algorithms  */
+        void minCost();                                     // Min Cost Arborescence
+        void kruskalsTrim(); 
 		void kruskalsMinSpanningTree();
+		void weightedMatching();
 		void dijkstrasShortestPath();
 
+		static void weightedMatching(Lemon&);
+
 		const std::vector<std::string> funcName = { "Weighted Matching",
-                                                            "Kruskal", 
-                                                            "Dijkstra", 
-                                                            "Kruskal's & Dijkstra's Combo",
-                                                            "Kruskal's & Dijkstra's Combo Seq",
-                                                            "Dijkstra Seq" };
+                                                    "Kruskal", 
+                                                    "Dijkstra", 
+                                                    "Kruskal's & Dijkstra's Combo",
+                                                    "Kruskal's & Dijkstra's Combo Seq",
+                                                    "Dijkstra Seq" };
 
 
 };
-
-//const std::vector<std::string> Lemon::funcName { "Weighted Matching", "Kruskal", "Dijkstra" };
-
-
-
-
-
 
 #endif
