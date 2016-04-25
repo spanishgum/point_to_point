@@ -17,7 +17,9 @@
 
 
 void printResult(std::string, int, float);
+template< typename T>
 void timeit(void(Lemon::*fptr)(void), Lemon& L, int i);
+template< typename T>
 void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon& L, int i);
 void timeit(void(Data::*)(void), Data&);
 
@@ -114,12 +116,20 @@ void testSynthetic(std::string testSyntheticFile, std::string testSyntheticGraph
 	Lemon D0_L(D0.getGraph(), &D0_LG);
 	Lemon D0_L2(D0.getGraph(), &D0_LG2);
 	Lemon D0_L3(D0.getGraph(), &D0_LG3);
-	
-	timeit(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
-	timeit(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
-	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
-	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
-	timeit(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
+        
+        if (n < 500) {
+            timeit<milliseconds>(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
+            timeit<milliseconds>(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
+            timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
+            timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
+            timeit<milliseconds>(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
+        } else {
+            timeit<seconds>(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
+            timeit<seconds>(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
+            timeit2<seconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
+            timeit2<seconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
+            timeit<seconds>(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
+        }
 }
 
 void testKN57() {
@@ -137,11 +147,11 @@ void testKN57() {
 	Lemon L2(D1.getGraph(), &LG2);
 	Lemon L3(D1.getGraph(), &LG3);
 	
-	timeit(&Lemon::initDistributionCenterSeq, L, DIJKSTRASEQ);
-	timeit(&Lemon::initDistributionCenter, L, DIJKSTRA);
-	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L2, KRUSKDIJKSEQ);
-	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L3, KRUSKDIJK);
-	timeit(&Lemon::kruskalsTrim, L, KRUSKAL);
+	timeit<milliseconds>(&Lemon::initDistributionCenterSeq, L, DIJKSTRASEQ);
+	timeit<milliseconds>(&Lemon::initDistributionCenter, L, DIJKSTRA);
+	timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L2, KRUSKDIJKSEQ);
+	timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L3, KRUSKDIJK);
+	timeit<milliseconds>(&Lemon::kruskalsTrim, L, KRUSKAL);
 }
 
 void testHA30() {
@@ -159,11 +169,11 @@ void testHA30() {
 	Lemon L5(D2.getGraph(), &LG5);
 	Lemon L6(D2.getGraph(), &LG6);
 	
-	timeit(&Lemon::initDistributionCenterSeq, L4, DIJKSTRASEQ);
-	timeit(&Lemon::initDistributionCenter, L4, DIJKSTRA);
-	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L5, KRUSKDIJKSEQ);
-	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L6, KRUSKDIJK);
-	timeit(&Lemon::kruskalsTrim, L4, KRUSKAL);
+	timeit<milliseconds>(&Lemon::initDistributionCenterSeq, L4, DIJKSTRASEQ);
+	timeit<milliseconds>(&Lemon::initDistributionCenter, L4, DIJKSTRA);
+	timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L5, KRUSKDIJKSEQ);
+	timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L6, KRUSKDIJK);
+	timeit<milliseconds>(&Lemon::kruskalsTrim, L4, KRUSKAL);
 }
 
 /*
@@ -175,15 +185,16 @@ void testHA30() {
  * @Return:		
  *
  */
+template< typename T>
 void timeit(void(Lemon::*fptr)(void), Lemon& L, int i) {
 	//clock_t beg = clock();
         
-        seconds beg = std::chrono::duration_cast<seconds>
+        T beg = std::chrono::duration_cast<T>
                     (std::chrono::system_clock::now().time_since_epoch()); 
 
 	(L.*fptr)();
 
-	seconds end = std::chrono::duration_cast<seconds>
+	T end = std::chrono::duration_cast<T>
                     (std::chrono::system_clock::now().time_since_epoch());
         	
 	std::cout << "Time it took " << L.funcName[i] << " to complete: " << end.count() - beg.count() << "\n\n";
@@ -206,15 +217,16 @@ void timeit(void(Lemon::*fptr)(void), Lemon& L, int i) {
  * @Return:		
  *
  */
+template <typename T>
 void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon& L, int i){
 	//clock_t beg = clock();
-        seconds beg = std::chrono::duration_cast<seconds>
+        T beg = std::chrono::duration_cast<T>
                     (std::chrono::system_clock::now().time_since_epoch()); 
 
 	(L.*spanTree)();
 	(L.*shortPath)();
 
-        seconds end = std::chrono::duration_cast<seconds>
+        T end = std::chrono::duration_cast<T>
                     (std::chrono::system_clock::now().time_since_epoch());
         	
 	std::cout << "Time it took " << L.funcName[i] << " to complete: " << end.count() - beg.count() << "\n\n";
