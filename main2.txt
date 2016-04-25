@@ -26,14 +26,19 @@ typedef std::chrono::seconds seconds;
 
 int main(int argc, char *argv[]) {
 	
-	if (argc < 2){
-		std::cout << "Must pass in int to determine alg to run" << std::endl;
+	if (argc < 3){
+		std::cout << "Must pass in int to determine alg to run and int
+		to determine testfile size...." << std::endl;
 		exit(0);
 	}
 
-	std::string testSyntheticFile = "n1000.dat";
-	std::string testSyntheticGraph = "n1000.graph";
-	DataFile N10(testSyntheticFile, 1000);
+	std::string testSyntheticFile = "n";
+	testSyntheticFile.append(to_string(argv[2]));
+	testSythesticFile.append(".dat");
+	std::string testSyntheticGraph = "n";
+	testSyntheticGraph.append(to_string(argv[2]));
+	testSyntheticGraph.append(".graph");
+	DataFile N10(testSyntheticFile, atoi(argv[2]));
 	Data D0(N10);
 	//timeit(&Data::createGraph, D0); 
 	D0.createGraph();
