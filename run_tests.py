@@ -8,7 +8,7 @@ import os, sys, subprocess, argparse
 	# ['./main', '-d', 'n1000.dat', '-g', 'n1000.graph', '-n', '1000']
 # ]
 
-sizes = [10, 20, 30, 40, 50, 100, 150, 200, 250, 500, 1000]
+sizes = [10, 20, 30, 40, 50, 100, 150, 200, 250, 500, 750, 1000]
 
 def gen_cmd(size):
 	n = str(size)
