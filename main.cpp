@@ -5,6 +5,8 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <cstdlib>
+#include <cstring>
 
 #define WEIGHTEDMATCHING 0
 #define KRUSKAL 1
@@ -19,102 +21,149 @@ void timeit(void(Lemon::*fptr)(void), Lemon& L, int i);
 void timeit2(void(Lemon::*spanTree)(void), void(Lemon::*shortPath)(void), Lemon& L, int i);
 void timeit(void(Data::*)(void), Data&);
 
+void testSynthetic(std::string testSyntheticFile, std::string testSyntheticGraph, int n);
+void testHA30();
+void testKN57();
+
 std::mutex mu;
 typedef std::chrono::milliseconds milliseconds;
 typedef std::chrono::microseconds microseconds;
 typedef std::chrono::seconds seconds;
 
-int main(int argc, char *argv[]) {
-	
-	/*if (argc < 2){
-		std::cout << "Must pass in int to determine alg to run" << std::endl;
-		exit(0);
-	}*/
+static void usage() {
+	std::cerr << "Usage: ./main [-t0] [-t1] [-d datfile -g graphfile -n N]\n";	
+	exit(0);
+}
 
-	std::string testSyntheticFile = "n1000.dat";
-	std::string testSyntheticGraph = "n1000.graph";
-	DataFile N10(testSyntheticFile, 1000);
+int main(int argc, char *argv[]) {
+
+	std::string d_file;
+	std::string g_file;
+	int n;
+	bool d_flag = 0, g_flag = 0, n_flag = 0;
+	
+	if (argc < 1) {
+		usage();
+	}
+	else if (argc == 2) {
+		if (strcmp(argv[1], "-t0") == 0) {
+			testKN57();
+			return 0;
+		}
+		else if (strcmp(argv[1], "-t1") == 0) {
+			testHA30();
+			return 0;
+		}
+		else {
+			usage();
+		}
+	}
+	else {
+		for (int i = 1; i < argc; ++i) {
+			if (strcmp(argv[i], "-d") == 0) {
+				if (++i < argc)
+				{
+					d_flag = 1;
+					d_file = argv[i];
+				} 
+				else usage();
+			}
+			else if (strcmp(argv[i], "-g") == 0) {
+				if (++i < argc)
+				{
+					g_flag = 1;
+					g_file = argv[i];
+				} 
+				else usage();
+			}
+			else if (strcmp(argv[i], "-n") == 0) {
+				if (++i < argc)
+				{
+					n_flag = 1;
+					n = atoi(argv[i]);
+				} 
+				else usage();
+			}
+			else {
+				usage();
+			}
+		}
+	}
+	if (d_flag && g_flag && n_flag) {
+		testSynthetic(d_file, g_file, n);
+	}
+	else {
+		usage();
+	}
+	
+	return 0;
+}
+
+void testSynthetic(std::string testSyntheticFile, std::string testSyntheticGraph, int n) {
+	std::cout << "\nTesting sythetic data file '" << testSyntheticFile
+		<< "' with 'n = " << n << "'\n------------------------------------------------\n\n";
+	
+	DataFile N10(testSyntheticFile, n);
 	Data D0(N10);
-	//timeit(&Data::createGraph, D0); 
+	
 	D0.createGraph();
 	D0.outputGraph(testSyntheticGraph);
 	D0.importGraph(testSyntheticGraph);
+	
 	lemon::ListGraph D0_LG, D0_LG2, D0_LG3;
 	Lemon D0_L(D0.getGraph(), &D0_LG);
 	Lemon D0_L2(D0.getGraph(), &D0_LG2);
-        Lemon D0_L3(D0.getGraph(), &D0_LG3);
-	//std::cout << "Starting Algos" << std::endl;
+	Lemon D0_L3(D0.getGraph(), &D0_LG3);
+	
 	timeit(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
 	timeit(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
 	timeit(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
+}
 
-	exit(0);
-
-	std::cout << "\nTesting KN57\n-------------------\n\n";
+void testKN57() {
+	std::cout << "\nTesting KN57\n------------------------------------------------\n\n";
+	
 	DataFile KN57("KN57/dist.txt", 57);
 	Data D1(KN57);
-    	D1.createGraph();
+	
+	D1.createGraph();
 	D1.outputGraph("KN57/test_out.txt");
 	D1.importGraph("KN57/test_out.txt");
-
-        lemon::ListGraph LG, LG2, LG3;
+	
+	lemon::ListGraph LG, LG2, LG3;
 	Lemon L(D1.getGraph(), &LG);
-        Lemon L2(D1.getGraph(), &LG2);
-        Lemon L3(D1.getGraph(), &LG3);
-
-        timeit(&Lemon::initDistributionCenterSeq, L, DIJKSTRASEQ);
+	Lemon L2(D1.getGraph(), &LG2);
+	Lemon L3(D1.getGraph(), &LG3);
+	
+	timeit(&Lemon::initDistributionCenterSeq, L, DIJKSTRASEQ);
 	timeit(&Lemon::initDistributionCenter, L, DIJKSTRA);
-    
-        timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L2, KRUSKDIJKSEQ);
+	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L2, KRUSKDIJKSEQ);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L3, KRUSKDIJK);
-       
 	timeit(&Lemon::kruskalsTrim, L, KRUSKAL);
+}
 
-	std::cout << "\nTesting HA30\n-------------------\n\n";
+void testHA30() {
+	std::cout << "\nTesting HA30\n------------------------------------------------\n\n";
+	
 	DataFile HA30("HA30/dist.txt", 30);
 	Data D2(HA30);
-    	D2.createGraph();
+	
+	D2.createGraph();
 	D2.outputGraph("HA30/test_out.txt");
 	D2.importGraph("HA30/test_out.txt");
-        lemon::ListGraph LG4, LG5, LG6;
+	
+	lemon::ListGraph LG4, LG5, LG6;
 	Lemon L4(D2.getGraph(), &LG4);
-        Lemon L5(D2.getGraph(), &LG5);
-        Lemon L6(D2.getGraph(), &LG6);
-
-        //timeit(&Lemon::initDistributionCenterSeq, L4, DIJKSTRASEQ);
+	Lemon L5(D2.getGraph(), &LG5);
+	Lemon L6(D2.getGraph(), &LG6);
+	
+	timeit(&Lemon::initDistributionCenterSeq, L4, DIJKSTRASEQ);
 	timeit(&Lemon::initDistributionCenter, L4, DIJKSTRA);
-    
-        //timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L5, KRUSKDIJKSEQ);
+	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L5, KRUSKDIJKSEQ);
 	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L6, KRUSKDIJK);
-
 	timeit(&Lemon::kruskalsTrim, L4, KRUSKAL);
-
-        /*
-        lemon::ListGraph LG2;
-        Lemon L2(D1.getGraph(), &LG2);
-        std::thread pureDijkstra ([&] {timeit(&Lemon::initDistributionCenter, L2, DIJKSTRA);});
-	std::thread KruskalDijkstra ([&] {timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L2, KRUSKDIJK);});
-
-	pureDijkstra.join();
-	KruskalDijkstra.join();
-        */
-	
-	
-        /*
-        std::thread pureDijkstraSeq ([&] {timeit(&Lemon::initDistributionCenterSeq, L, DIJKSTRASEQ);});
-	std::thread pureDijkstra ([&] {timeit(&Lemon::initDistributionCenter, L, DIJKSTRA);});
-    
-        std::thread KruskalDijkstraSeq ([&] {timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, L, KRUSKDIJKSEQ);});
-	std::thread KruskalDijkstra ([&] {timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, L, KRUSKDIJK);});
-
-        pureDijkstraSeq.join();
-	pureDijkstra.join();
-        KruskalDijkstraSeq.join();
-	KruskalDijkstra.join();
-        */
-	return 0;
 }
 
 /*
