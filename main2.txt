@@ -26,10 +26,10 @@ typedef std::chrono::seconds seconds;
 
 int main(int argc, char *argv[]) {
 	
-	/*if (argc < 2){
+	if (argc < 2){
 		std::cout << "Must pass in int to determine alg to run" << std::endl;
 		exit(0);
-	}*/
+	}
 
 	std::string testSyntheticFile = "n1000.dat";
 	std::string testSyntheticGraph = "n1000.graph";
@@ -44,11 +44,27 @@ int main(int argc, char *argv[]) {
 	Lemon D0_L2(D0.getGraph(), &D0_LG2);
         Lemon D0_L3(D0.getGraph(), &D0_LG3);
 	//std::cout << "Starting Algos" << std::endl;
-	timeit(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
-	timeit(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
-	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
-	timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
-	timeit(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
+	if(atoi(argv[1]) == 0){
+		std::cout << "****************************************************************" << std::endl;
+		timeit(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
+		std::cout << "****************************************************************" << std::endl;
+	}
+	else if(atoi(argv[1]) == 1){
+		std::cout << "****************************************************************" << std::endl;
+		timeit(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
+		std::cout << "****************************************************************" << std::endl;
+	}
+	else if(atoi(argv[1]) == 2){
+		std::cout << "****************************************************************" << std::endl;
+		timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
+		std::cout << "****************************************************************" << std::endl;
+	}
+	else{
+		std::cout << "****************************************************************" << std::endl;
+		timeit2(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
+		std::cout << "****************************************************************" << std::endl;
+	}
+	//timeit(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
 
 	exit(0);
 
