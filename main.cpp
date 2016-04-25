@@ -120,8 +120,8 @@ void testSynthetic(std::string testSyntheticFile, std::string testSyntheticGraph
         if (n < 500) {
             timeit<milliseconds>(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);
             timeit<milliseconds>(&Lemon::initDistributionCenter, D0_L, DIJKSTRA);
-            timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeq, D0_L2, KRUSKDIJKSEQ);
-            timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenter, D0_L3, KRUSKDIJK);
+            timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterSeqAfterTrim, D0_L2, KRUSKDIJKSEQ);
+            timeit2<milliseconds>(&Lemon::kruskalsTrim, &Lemon::initDistributionCenterAfterTrim, D0_L3, KRUSKDIJK);
             timeit<milliseconds>(&Lemon::kruskalsTrim, D0_L, KRUSKAL);
         } else {
             timeit<seconds>(&Lemon::initDistributionCenterSeq, D0_L, DIJKSTRASEQ);

@@ -30,20 +30,24 @@ class Lemon {
 	private:
 		ListGraph *graph;                                   // Undirected graph
 		ListGraph::EdgeMap<float> weights;                  // Edge value
+		ListGraph::EdgeMap<float> modifiedWeights;			// Edge values after 
 		ListGraph::NodeMap<int> n2idx;                      // Mapping of Node to Node id
 		std::map<int, ListGraph::Node> idx2n;               // Mapping of Node id to Node
 		ListGraph::EdgeMap< std::pair<int, int> > e2n;      // Source-Target edge structure
         std::pair<int, ListGraph::Node> disCenter;          // Distribution Center
         unsigned int numThreads;
 
-        float dijkstrasTotalMinDistance(ListGraph::Node &); 
+        float dijkstrasTotalMinDistance(ListGraph::Node &);
+		float dijkstrasTotalMinDistanceAfterTrim(ListGraph::Node &);
 	        
 	public:
 		Lemon(std::vector<Vertex>, ListGraph *);
 		~Lemon();
 
         void initDistributionCenter();
+        void initDistributionCenterAfterTrim();
         void initDistributionCenterSeq();
+        void initDistributionCenterSeqAfterTrim();
 
         /*  Accessors   */
 		int getN2idx(ListGraph::Node);

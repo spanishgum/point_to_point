@@ -7,7 +7,7 @@
  *  @param g                    Empty LisGraph Object
  */
 Lemon::Lemon(std::vector<Vertex> adjacency_list, ListGraph *g) 
-	: graph(g), weights(*g), n2idx(*g), e2n(*g), numThreads(50) {
+	: graph(g), weights(*g), modifiedWeights(*g), n2idx(*g), e2n(*g), numThreads(50) {
 
 	for (auto v : adjacency_list) {
 		ListGraph::Node n = this->graph->addNode();
@@ -75,6 +75,34 @@ void Lemon::initDistributionCenter() {
               << " Total Distance: " << min <<  std::endl;
 }
 
+void Lemon::initDistributionCenterAfterTrim() {
+    float cur, min = std::numeric_limits<float>::max();
+    unsigned int NUM_NODES = this->idx2n.size();
+    
+    for (unsigned int t = 0; t < std::ceil(NUM_NODES / this->numThreads); ++t) { 
+        std::vector<std::future<float>> distances;
+        for (unsigned int i = t*this->numThreads; i < (t+1)*this->numThreads && i < this->idx2n.size(); ++i) {
+            distances.push_back(std::async(std::launch::async,
+                                            &Lemon::dijkstrasTotalMinDistanceAfterTrim,
+                                            this,
+                                            std::ref(this->idx2n[i])));
+        }
+
+        for (unsigned int i = t*this->numThreads, j = 0; i < (t+1)*this->numThreads && i < this->idx2n.size(); ++i, ++j) {
+            // Thread waits for computation to end on call to get()
+            if ((cur = distances[j].get()) <= min) {
+                this->disCenter.first = i; 
+                this->disCenter.second = this->idx2n[i];
+                min = cur;
+            }
+        }
+        distances.clear();
+    }
+    
+    std::cout << "Found DistributionCenter: " << disCenter.first 
+              << " Total Distance: " << min <<  std::endl;
+}
+
 /**
  *  Runs Dijkstra's algorithm, sequentially,  on each 
  *  node to every other node and selects the node
@@ -89,6 +117,20 @@ void Lemon::initDistributionCenterSeq() {
 
     for (auto n : this->idx2n) {
         if ((cur = dijkstrasTotalMinDistance(n.second)) <= min) {
+            this->disCenter.first = n.first;
+            this->disCenter.second = n.second;
+            min = cur;
+        }
+    }
+    std::cout << "Found DistributionCenter: " << disCenter.first 
+              << " Total Distane: " << min << std::endl;
+}
+
+void Lemon::initDistributionCenterSeqAfterTrim() {
+    float cur, min = std::numeric_limits<float>::max();
+
+    for (auto n : this->idx2n) {
+        if ((cur = dijkstrasTotalMinDistanceAfterTrim(n.second)) <= min) {
             this->disCenter.first = n.first;
             this->disCenter.second = n.second;
             min = cur;
@@ -181,6 +223,9 @@ void Lemon::kruskalsTrim() {
            this->graph->erase(e); 
            this->weights[e] = std::numeric_limits<float>::max();
         }
+		else{
+			this->modifiedWeights[e] = this->weights[e];
+		}
 	}
 }
 
@@ -216,6 +261,17 @@ float Lemon::dijkstrasTotalMinDistance(ListGraph::Node &s) {
     float distance = 0;
     for (auto t : this->idx2n) {
         auto d = Dijkstra<ListGraph, ListGraph::EdgeMap<float> >(*(this->graph), this->weights);
+        d.run(s);
+        distance += d.dist(t.second);
+    }
+    //std::cout << this->n2idx[s] << " total min distance: " << distance << std::endl;
+    return distance;
+}
+
+float Lemon::dijkstrasTotalMinDistanceAfterTrim(ListGraph::Node &s) {
+    float distance = 0;
+    for (auto t : this->idx2n) {
+        auto d = Dijkstra<ListGraph, ListGraph::EdgeMap<float> >(*(this->graph), this->modifiedWeights);
         d.run(s);
         distance += d.dist(t.second);
     }

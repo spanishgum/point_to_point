@@ -8,7 +8,9 @@ import os, sys, subprocess, argparse
 	# ['./main', '-d', 'n1000.dat', '-g', 'n1000.graph', '-n', '1000']
 # ]
 
-sizes = [10, 20, 30, 40, 50, 100, 150, 200, 250, 500, 750, 1000]
+sizes = [50, 100, 150, 200, 250]
+
+#[10, 20, 30, 40, 50, 100, 150, 200, 250] [500, 750, 1000]
 
 def gen_cmd(size):
 	n = str(size)
@@ -22,7 +24,7 @@ def main():
 		cmds.append(gen_cmd(i))
 	for cmd in cmds:
 		for i in range(2):
-			with open('results.txt', 'a') as out:
+			with open('results22txt', 'a') as out:
 				subprocess.call(cmd, stdout=out)
 #
 # Call this module as a main program

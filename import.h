@@ -12,8 +12,8 @@
 #include <thread>
 #include <mutex>
 
-#define MIN_DEGREE 3
-#define MAX_DEGREE 8
+#define MIN_DEGREE 25
+#define MAX_DEGREE 50
 
 struct Vertex {
 	int id;
