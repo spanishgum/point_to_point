@@ -12,8 +12,9 @@ def main():
 	global cmds
 	
 	for cmd in cmds:
-		with open('results.txt', 'a') as out:
-			subprocess.call(cmd, stdout=out)
+		for i in range(5):
+			with open('results.txt', 'a') as out:
+				subprocess.call(cmd, stdout=out)
 #
 # Call this module as a main program
 if __name__ == '__main__':
