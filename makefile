@@ -9,7 +9,9 @@ define HEADER
 
    ---------------------------------------------------------
    |                                                       |
-   |              Program XYZ - Version 0.0.0              |
+   |                Point to Point Delivery                |
+   |              Source Location Optimization             |
+   |                     Version 1.0.0                     |
    |                                                       |
    |                    Adam Stallard                      |
    |                   Eric Serbousek                      |
